@@ -1,19 +1,18 @@
-# Restaurant Repair CRM + Marketing + Estimate
+# Restaurant Repair CRM — Full RU/EN
 
-Bilingual RU/EN Vercel / Next.js app.
+Полностью двуязычная версия CRM для ремонта ресторанного оборудования.
 
-## Modules
-- CRM client database
-- Lead source tracking
-- Flat-rate Florida price book
-- Restaurant equipment estimate/work order
-- Technician assignment
-- Revenue forecast
-- Email campaign templates
-- Customer retention statuses
-- RU/EN language switch
+## Что исправлено
+- Все вкладки и блоки имеют русский и английский язык.
+- Все статусы переведены.
+- Все категории техники переведены.
+- Все виды работ переведены.
+- Estimate документ генерируется на выбранном языке.
+- Email рассылки генерируются на выбранном языке.
+- Графики и фильтры переключаются RU/EN.
+- Прайсбук отображается RU/EN.
 
-## Vercel settings
+## Vercel
 Framework: Next.js  
 Root Directory: ./  
 Output Directory: Next.js default
