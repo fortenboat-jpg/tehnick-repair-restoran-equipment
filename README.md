@@ -1,38 +1,19 @@
-# Restaurant Repair Dashboard — Vercel / Next.js MVP
+# Restaurant Repair CRM + Marketing + Estimate
 
-Красивый дашборд для поиска клиентов на ремонт ресторанного оборудования.
+Bilingual RU/EN Vercel / Next.js app.
 
-## Что есть
-- CRM по ресторанам Tampa Bay
-- Карточки лидов вместо сухой таблицы
-- Воронка продаж
-- Графики по типам клиентов
-- Калькулятор estimate
-- Генератор текста estimate для SMS/email
-- Статусы: New, Called, No Answer, Estimate Sent, Won, Lost
-- Готово для Vercel
+## Modules
+- CRM client database
+- Lead source tracking
+- Flat-rate Florida price book
+- Restaurant equipment estimate/work order
+- Technician assignment
+- Revenue forecast
+- Email campaign templates
+- Customer retention statuses
+- RU/EN language switch
 
-## Запуск локально
-```bash
-npm install
-npm run dev
-```
-
-Открой:
-```bash
-http://localhost:3000
-```
-
-## Деплой на Vercel
-1. Создай новый GitHub репозиторий.
-2. Загрузи файлы проекта.
-3. На Vercel нажми Add New Project.
-4. Выбери репозиторий.
-5. Framework: Next.js.
-6. Deploy.
-
-## Следующий этап
-- Подключить Supabase database.
-- Подключить Google Places API для поиска ресторанов.
-- Подключить Gmail/Twilio для отправки estimate.
-- Сделать PDF estimate.
+## Vercel settings
+Framework: Next.js  
+Root Directory: ./  
+Output Directory: Next.js default
