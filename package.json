@@ -1,6 +1,6 @@
 {
-  "name": "restaurant-repair-crm-marketing-bilingual",
-  "version": "2.0.0",
+  "name": "restaurant-repair-crm-full-ru-en",
+  "version": "2.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
