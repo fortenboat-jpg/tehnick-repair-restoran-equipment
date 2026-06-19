@@ -1,460 +1,431 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { jsPDF } from "jspdf";
 import {
-  Languages, Search, Phone, MessageSquare, Mail, MapPin, UserRound,
-  FileText, Wrench, Send, DollarSign, TrendingUp, Users, Star,
-  Megaphone, Database
+  Languages, FileText, Wrench, Building2, UserRound, MapPin, Phone,
+  Mail, ClipboardCheck, Calculator, Download, ShieldCheck, Camera,
+  CheckCircle2, PlusCircle, Trash2
 } from "lucide-react";
-import {
-  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip,
-  PieChart, Pie, LineChart, Line, CartesianGrid
-} from "recharts";
 
 const UI = {
   ru: {
-    langButton: "English",
-    heroBadge: "Флорида · сервис коммерческой кухни",
-    title: "CRM для ремонта ресторанного оборудования",
-    subtitle: "Полностью двуязычная система: база клиентов, рассылки, flat-rate прайсбук, estimate/work order и прогноз выручки.",
-    heroCardTitle: "CRM + Estimate + Маркетинг",
-    heroCardText: "Лиды → заявки → ремонты → постоянные клиенты",
-
-    statsClients: "Клиентов",
-    statsPipeline: "Потенциал",
-    statsAvgTicket: "Средний чек",
-    statsRecurring: "Постоянных",
-
-    crmTitle: "База клиентов",
-    crmDesc: "Рестораны, кафе, бары, пекарни, фудтраки, магазины и коммерческие кухни.",
-    searchPlaceholder: "Поиск: пицца, холодильник, Тампа, Google Maps...",
-    allStatuses: "Все статусы",
-    allSources: "Все источники",
-
-    funnel: "Воронка",
-    sources: "Источники лидов",
-    revenue: "Выручка",
-
-    forecastTitle: "Прогноз выручки",
-    forecastDesc: "Сколько лидов и заказов нужно для цели $5k–10k в день.",
-    dailyTarget: "Цель в день",
-    avgTicket: "Средний чек",
-    closeRate: "Конверсия %",
-    jobsNeeded: "Нужно заказов",
-    leadsNeeded: "Нужно лидов",
-
-    estimateTitle: "Estimate / Work Order",
-    estimateDesc: "Документ: клиент, адрес, источник, техник, оборудование, виды работ, цена и условия.",
-    business: "Бизнес",
-    serviceLocation: "Адрес работы",
+    switch: "English",
+    title: "Forten CRM + Smart Estimate",
+    subtitle: "Профессиональный estimate/work order для ремонта коммерческого кухонного оборудования: диагностика, работы, материалы, гарантия и PDF для клиента.",
+    badge: "Forten Commercial Equipment Services",
+    company: "Forten Commercial Equipment Services",
+    tagline: "Ремонт и обслуживание коммерческого кухонного оборудования",
+    serviceLine: "Холодильное • Тепловое • Подготовка продуктов • Моечное • Напиточное оборудование",
+    customer: "Клиент",
+    equipment: "Оборудование",
+    diagnostic: "Диагностика",
+    repairScope: "Что делаем",
+    price: "Расчет стоимости",
+    warranty: "Гарантия",
+    pdf: "PDF Estimate",
+    businessName: "Название бизнеса",
+    contact: "Контактное лицо",
+    phone: "Телефон",
+    email: "Email",
+    address: "Адрес объекта",
+    equipmentType: "Тип оборудования",
+    manufacturer: "Производитель",
+    model: "Модель",
+    serial: "Серийный номер",
+    symptom: "Жалоба клиента",
+    finding: "Что выявила диагностика",
+    recommendation: "Рекомендация техника",
+    estimateNo: "Estimate №",
+    date: "Дата",
+    validUntil: "Действителен до",
     technician: "Техник",
-    equipmentPriceBook: "Прайсбук по типам техники",
-    workScope: "Виды работ / Flat-rate услуги",
-    calculation: "Расчет",
-    servicesTotal: "Сумма услуг",
-    partsMaterials: "Запчасти / материалы",
-    tax: "Налог %",
-    discount: "Скидка",
+    addItem: "Добавить строку",
+    generatePdf: "Скачать PDF",
     total: "Итого",
-    copyEstimate: "Скопировать Estimate",
-
-    marketingTitle: "Email-маркетинг",
-    marketingDesc: "Письма для холодной базы, follow-up, профилактики и постоянных клиентов.",
-    campaign: "Кампания",
-    subject: "Тема письма",
-    emailBody: "Текст письма",
-    copyEmail: "Скопировать письмо",
-
-    noEmail: "Email не указан",
-    customerStatus: "Статус клиента",
+    subtotal: "Subtotal",
+    tax: "Налог",
+    discount: "Скидка",
+    parts: "Запчасти / материалы",
+    service: "Работа / услуга",
+    qty: "Кол-во",
+    unit: "Цена",
+    amount: "Сумма",
     notes: "Заметки",
-    leadSource: "Источник лида",
-    assignedTech: "Назначенный техник",
-    reportedIssue: "Заявленная проблема",
-    workToPerform: "Работы к выполнению",
-    priceBreakdown: "Расчет стоимости",
-    termsTitle: "Условия",
-    estimateHeader: "ESTIMATE НА РЕМОНТ КОММЕРЧЕСКОГО РЕСТОРАННОГО ОБОРУДОВАНИЯ",
-    terms: "Этот estimate не является финальным invoice. Итоговая цена может измениться после диагностики, если обнаружены дополнительные неисправности, утечки, электрические проблемы, недоступные детали или потребуется повторный визит. Запчасти и материалы оплачиваются отдельно, если не указано иначе.",
-    copied: "Скопировано",
-
-    status: {
-      lead: "Лид",
-      contacted: "Связались",
-      estimate_sent: "Estimate отправлен",
-      follow_up: "Follow-up",
-      customer: "Клиент",
-      vip: "VIP клиент",
-      lost: "Потерян"
-    },
-
-    businessTypes: {
-      pizza: "Пиццерия",
-      bakery: "Пекарня",
-      icecream: "Магазин мороженого",
-      deli: "Дели / сэндвичи",
-      foodtruck: "Фудтрак",
-      bargrill: "Бар и гриль"
-    },
-
-    equipment: {
+    terms: "Условия",
+    termsText: "Estimate не является финальным invoice. Финальная цена может измениться после дополнительной диагностики, если обнаружены скрытые неисправности, недоступные детали, электрические проблемы, утечки или требуется повторный визит. Работы выполняются после подтверждения заказчиком.",
+    warrantyText: "90 дней гарантия на выполненные работы. Гарантия производителя на установленные запчасти применяется согласно условиям производителя. Гарантия не действует при вмешательстве третьих лиц или эксплуатации оборудования с нарушениями.",
+    compressorTemplate: "Шаблон: замена компрессора",
+    mixerTemplate: "Шаблон: ремонт миксера",
+    fryerTemplate: "Шаблон: ремонт фритюрницы",
+    dishwasherTemplate: "Шаблон: ремонт посудомойки",
+    workIncluded: "В работу входит",
+    customerApproval: "Подтверждение заказчика",
+    signature: "Подпись / дата",
+    copied: "Готово",
+    equipmentOptions: {
       walkin_cooler: "Walk-in холодильная камера",
-      oven: "Коммерческая печь",
-      ice_machine: "Льдогенератор",
-      prep_table: "Холодильный prep table",
-      fryer: "Фритюрница",
-      dishwasher: "Посудомоечная машина",
       walkin_freezer: "Walk-in морозильная камера",
-      reachin_cooler: "Вертикальный холодильник",
+      reachin: "Вертикальный холодильник / морозильник",
+      prep_table: "Холодильный prep table",
+      ice_machine: "Льдогенератор",
+      oven: "Коммерческая печь / духовой шкаф",
+      fryer: "Фритюрница",
+      grill: "Гриль / плита / griddle",
+      dishwasher: "Посудомоечная машина",
       mixer: "Коммерческий миксер",
       slicer: "Слайсер",
-      espresso: "Кофемашина / эспрессо"
-    },
-
-    equipmentGroups: {
-      refrigeration: "Холодильное оборудование",
-      hotside: "Горячая линия / плиты",
-      foodprep: "Подготовка продуктов",
-      dishbev: "Мойка / напитки"
-    },
-
-    service: {
-      diagnostic_general: "Диагностика / выезд",
-      walkin_diag: "Диагностика walk-in камеры",
-      ice_diag: "Диагностика льдогенератора",
-      defrost: "Разморозка / удаление льда",
-      coil_clean: "Чистка конденсатора / испарителя",
-      leak_search: "Поиск утечки фреона",
-      recharge: "Заправка фреоном / материалы",
-      fan_motor: "Замена вентилятора",
-      thermostat_ref: "Замена термостата / контроллера",
-      compressor_diag: "Диагностика компрессора",
-      compressor_replace: "Замена компрессора",
-      oven_diag: "Диагностика печи",
-      fryer_diag: "Диагностика фритюрницы",
-      gas_check: "Проверка газового клапана / горелки / розжига",
-      igniter: "Замена розжига",
-      gas_valve: "Замена газового клапана",
-      thermostat_hot: "Замена термостата горячей линии",
-      mixer_diag: "Диагностика миксера / слайсера",
-      mixer_repair: "Ремонт коммерческого миксера",
-      slicer_repair: "Ремонт слайсера",
-      dish_diag: "Диагностика посудомойки",
-      dish_pump: "Ремонт насоса / мотора посудомойки",
-      dish_heater: "Ремонт нагревателя / booster",
-      emergency: "Срочный выезд / приоритет",
-      pm_monthly: "Ежемесячная профилактика"
-    },
-
-    categories: {
-      general: "Общее",
-      refrigeration: "Холодильное",
-      maintenance: "Профилактика",
-      priority: "Срочность",
-      hotside: "Горячая линия",
-      foodprep: "Подготовка продуктов",
-      dishwashing: "Посудомойки"
-    },
-
-    campaigns: {
-      cold: "Холодная рассылка",
-      followup: "Follow-up после звонка",
-      maintenance: "Профилактика 30/90 дней",
-      vip: "Постоянное обслуживание"
+      coffee: "Кофемашина / напиточное оборудование",
+      other: "Другое коммерческое кухонное оборудование"
     }
   },
-
   en: {
-    langButton: "Русский",
-    heroBadge: "Florida · commercial kitchen service",
-    title: "Restaurant Equipment Repair CRM",
-    subtitle: "Fully bilingual system: customer database, email outreach, flat-rate price book, estimate/work order, and revenue forecast.",
-    heroCardTitle: "CRM + Estimate + Marketing",
-    heroCardText: "Leads → jobs → repairs → recurring customers",
-
-    statsClients: "Clients",
-    statsPipeline: "Pipeline",
-    statsAvgTicket: "Average ticket",
-    statsRecurring: "Recurring",
-
-    crmTitle: "Client Database",
-    crmDesc: "Restaurants, cafes, bars, bakeries, food trucks, stores, and commercial kitchens.",
-    searchPlaceholder: "Search: pizza, cooler, Tampa, Google Maps...",
-    allStatuses: "All statuses",
-    allSources: "All sources",
-
-    funnel: "Funnel",
-    sources: "Lead Sources",
-    revenue: "Revenue",
-
-    forecastTitle: "Revenue Forecast",
-    forecastDesc: "How many leads and jobs are needed to reach $5k–10k per day.",
-    dailyTarget: "Daily target",
-    avgTicket: "Average ticket",
-    closeRate: "Close rate %",
-    jobsNeeded: "Jobs needed",
-    leadsNeeded: "Leads needed",
-
-    estimateTitle: "Estimate / Work Order",
-    estimateDesc: "Document: customer, address, source, technician, equipment, scope, price, and terms.",
-    business: "Business",
-    serviceLocation: "Service location",
+    switch: "Русский",
+    title: "Forten CRM + Smart Estimate",
+    subtitle: "Professional estimate/work order for commercial kitchen equipment service: diagnostics, scope, materials, warranty, and client-ready PDF.",
+    badge: "Forten Commercial Equipment Services",
+    company: "Forten Commercial Equipment Services",
+    tagline: "Commercial Kitchen Equipment Repair & Maintenance",
+    serviceLine: "Refrigeration • Cooking • Food Preparation • Warewashing • Beverage Equipment",
+    customer: "Customer",
+    equipment: "Equipment",
+    diagnostic: "Diagnostic",
+    repairScope: "Scope of Work",
+    price: "Price Breakdown",
+    warranty: "Warranty",
+    pdf: "PDF Estimate",
+    businessName: "Business name",
+    contact: "Contact person",
+    phone: "Phone",
+    email: "Email",
+    address: "Service address",
+    equipmentType: "Equipment type",
+    manufacturer: "Manufacturer",
+    model: "Model",
+    serial: "Serial number",
+    symptom: "Customer complaint",
+    finding: "Inspection findings",
+    recommendation: "Technician recommendation",
+    estimateNo: "Estimate #",
+    date: "Date",
+    validUntil: "Valid until",
     technician: "Technician",
-    equipmentPriceBook: "Equipment price book",
-    workScope: "Work scope / Flat-rate services",
-    calculation: "Calculation",
-    servicesTotal: "Services total",
-    partsMaterials: "Parts / materials",
-    tax: "Tax %",
-    discount: "Discount",
+    addItem: "Add item",
+    generatePdf: "Download PDF",
     total: "Total",
-    copyEstimate: "Copy Estimate",
-
-    marketingTitle: "Email Marketing",
-    marketingDesc: "Templates for cold outreach, follow-up, maintenance, and recurring customers.",
-    campaign: "Campaign",
-    subject: "Subject",
-    emailBody: "Email body",
-    copyEmail: "Copy email",
-
-    noEmail: "No email",
-    customerStatus: "Customer status",
+    subtotal: "Subtotal",
+    tax: "Tax",
+    discount: "Discount",
+    parts: "Parts / materials",
+    service: "Labor / service",
+    qty: "Qty",
+    unit: "Unit price",
+    amount: "Amount",
     notes: "Notes",
-    leadSource: "Lead source",
-    assignedTech: "Assigned technician",
-    reportedIssue: "Reported issue",
-    workToPerform: "Work to be performed",
-    priceBreakdown: "Price breakdown",
-    termsTitle: "Terms",
-    estimateHeader: "COMMERCIAL RESTAURANT EQUIPMENT REPAIR ESTIMATE",
-    terms: "This estimate is not a final invoice. Final price may change after diagnostics if additional failures, leaks, electrical issues, unavailable parts, or follow-up visits are required. Parts and materials are billed separately unless stated otherwise.",
-    copied: "Copied",
-
-    status: {
-      lead: "Lead",
-      contacted: "Contacted",
-      estimate_sent: "Estimate sent",
-      follow_up: "Follow-up",
-      customer: "Customer",
-      vip: "VIP customer",
-      lost: "Lost"
-    },
-
-    businessTypes: {
-      pizza: "Pizza Restaurant",
-      bakery: "Bakery",
-      icecream: "Ice Cream Shop",
-      deli: "Deli / Sandwich Shop",
-      foodtruck: "Food Truck",
-      bargrill: "Bar & Grill"
-    },
-
-    equipment: {
+    terms: "Terms",
+    termsText: "This estimate is not a final invoice. Final price may change after additional diagnostics if hidden failures, unavailable parts, electrical issues, leaks, or follow-up visits are required. Work will be performed after customer approval.",
+    warrantyText: "90-day labor warranty on completed work. Manufacturer warranty applies to installed parts according to manufacturer terms. Warranty is void if the system is modified by others or operated outside normal conditions.",
+    compressorTemplate: "Template: compressor replacement",
+    mixerTemplate: "Template: mixer repair",
+    fryerTemplate: "Template: fryer repair",
+    dishwasherTemplate: "Template: dishwasher repair",
+    workIncluded: "Work includes",
+    customerApproval: "Customer Approval",
+    signature: "Signature / date",
+    copied: "Done",
+    equipmentOptions: {
       walkin_cooler: "Walk-in Cooler",
-      oven: "Commercial Oven",
-      ice_machine: "Ice Machine",
-      prep_table: "Refrigerated Prep Table",
-      fryer: "Fryer",
-      dishwasher: "Commercial Dishwasher",
       walkin_freezer: "Walk-in Freezer",
-      reachin_cooler: "Reach-in Cooler",
+      reachin: "Reach-in Cooler / Freezer",
+      prep_table: "Refrigerated Prep Table",
+      ice_machine: "Ice Machine",
+      oven: "Commercial Oven",
+      fryer: "Fryer",
+      grill: "Grill / Range / Griddle",
+      dishwasher: "Commercial Dishwasher",
       mixer: "Commercial Mixer",
       slicer: "Meat Slicer",
-      espresso: "Coffee / Espresso Machine"
-    },
-
-    equipmentGroups: {
-      refrigeration: "Refrigeration",
-      hotside: "Cooking / Hot Side",
-      foodprep: "Food Preparation",
-      dishbev: "Dishwashing / Beverage"
-    },
-
-    service: {
-      diagnostic_general: "Diagnostic / service call",
-      walkin_diag: "Walk-in diagnostic",
-      ice_diag: "Ice machine diagnostic",
-      defrost: "Defrost / ice removal",
-      coil_clean: "Condenser / evaporator cleaning",
-      leak_search: "Refrigerant leak search",
-      recharge: "Refrigerant recharge / materials",
-      fan_motor: "Fan motor replacement",
-      thermostat_ref: "Thermostat / control replacement",
-      compressor_diag: "Compressor diagnostic",
-      compressor_replace: "Compressor replacement",
-      oven_diag: "Oven diagnostic",
-      fryer_diag: "Fryer diagnostic",
-      gas_check: "Gas valve / burner / igniter check",
-      igniter: "Igniter replacement",
-      gas_valve: "Gas valve replacement",
-      thermostat_hot: "Hot-side thermostat replacement",
-      mixer_diag: "Mixer / slicer diagnostic",
-      mixer_repair: "Commercial mixer repair",
-      slicer_repair: "Slicer repair",
-      dish_diag: "Dishwasher diagnostic",
-      dish_pump: "Dishwasher pump / motor repair",
-      dish_heater: "Heater / booster repair",
-      emergency: "Same-day / emergency priority",
-      pm_monthly: "Monthly preventive maintenance"
-    },
-
-    categories: {
-      general: "General",
-      refrigeration: "Refrigeration",
-      maintenance: "Maintenance",
-      priority: "Priority",
-      hotside: "Hot Side",
-      foodprep: "Food Prep",
-      dishwashing: "Dishwashing"
-    },
-
-    campaigns: {
-      cold: "Cold outreach",
-      followup: "Post-call follow-up",
-      maintenance: "30/90 day maintenance",
-      vip: "Recurring service offer"
+      coffee: "Coffee / Beverage Equipment",
+      other: "Other Commercial Kitchen Equipment"
     }
   }
 };
 
-const STATUS_KEYS = ["lead", "contacted", "estimate_sent", "follow_up", "customer", "vip", "lost"];
-
-const CLIENTS = [
-  { id:1, business:"Demo Pizza Tampa", typeKey:"pizza", contact:"Manager", phone:"(813) 555-0101", email:"manager@example.com", address:"Tampa, FL", city:"Tampa", source:"Google Maps", statusKey:"lead", equipmentKey:"walkin_cooler", issueRu:"Температура в холодильной камере растет", issueEn:"Cooler temperature rising", avgTicket:1200, notesRu:"Хороший клиент для профилактики холодильников", notesEn:"Good target for refrigeration maintenance" },
-  { id:2, business:"Bay Bakery Brandon", typeKey:"bakery", contact:"Owner", phone:"(813) 555-0102", email:"owner@example.com", address:"Brandon, FL", city:"Brandon", source:"Yelp", statusKey:"contacted", equipmentKey:"oven", issueRu:"Печь не держит температуру", issueEn:"Oven not holding temperature", avgTicket:900, notesRu:"Лид по горячей линии", notesEn:"Hot-side lead" },
-  { id:3, business:"Clearwater Ice Cream", typeKey:"icecream", contact:"Store Manager", phone:"(727) 555-0103", email:"", address:"Clearwater, FL", city:"Clearwater", source:"Phone Call", statusKey:"estimate_sent", equipmentKey:"ice_machine", issueRu:"Льдогенератор не делает лед", issueEn:"Ice machine not making ice", avgTicket:1200, notesRu:"Можно перевести в регулярное обслуживание", notesEn:"Good recurring maintenance target" },
-  { id:4, business:"St Pete Deli", typeKey:"deli", contact:"Kitchen Manager", phone:"(727) 555-0104", email:"", address:"St Petersburg, FL", city:"St Petersburg", source:"Facebook", statusKey:"follow_up", equipmentKey:"prep_table", issueRu:"Prep table плохо охлаждает", issueEn:"Prep table not cooling", avgTicket:480, notesRu:"Перезвонить утром", notesEn:"Call again in the morning" },
-  { id:5, business:"Riverview Food Truck", typeKey:"foodtruck", contact:"Owner", phone:"(813) 555-0105", email:"foodtruck@example.com", address:"Riverview, FL", city:"Riverview", source:"Referral", statusKey:"customer", equipmentKey:"fryer", issueRu:"Сервис фритюрницы и холодильника", issueEn:"Fryer and cooler service", avgTicket:825, notesRu:"Предложить ежемесячное обслуживание", notesEn:"Offer monthly maintenance" },
-  { id:6, business:"Downtown Bar & Grill", typeKey:"bargrill", contact:"General Manager", phone:"(813) 555-0110", email:"gm@example.com", address:"Tampa, FL", city:"Tampa", source:"Website", statusKey:"vip", equipmentKey:"dishwasher", issueRu:"Посудомойка плохо греет воду", issueEn:"Dishwasher heating issue", avgTicket:1300, notesRu:"VIP клиент, несколько единиц техники", notesEn:"VIP multi-equipment customer" }
-];
-
-const TECHS = [
-  { id:"alex", name:"Alex - Commercial Equipment Tech", phone:"+1 (689) 220-8902", areaRu:"Tampa Bay", areaEn:"Tampa Bay", roleRu:"Холодильное и кухонное оборудование", roleEn:"Refrigeration / kitchen equipment" },
-  { id:"ref", name:"Refrigeration Specialist", phone:"", areaRu:"Тампа / Брэндон / Ривервью", areaEn:"Tampa / Brandon / Riverview", roleRu:"Walk-in камеры, морозильники, льдогенераторы", roleEn:"Walk-in coolers, freezers, ice machines" },
-  { id:"hot", name:"Hot Side Technician", phone:"", areaRu:"Tampa Bay", areaEn:"Tampa Bay", roleRu:"Печи, фритюрницы, грили, газовое оборудование", roleEn:"Ovens, fryers, grills, gas equipment" }
-];
-
-const EQUIPMENT_GROUPS = [
-  { groupKey:"refrigeration", items:[
-    { equipmentKey:"walkin_cooler", diag:199, typical:1200 },
-    { equipmentKey:"walkin_freezer", diag:199, typical:1500 },
-    { equipmentKey:"reachin_cooler", diag:159, typical:850 },
-    { equipmentKey:"prep_table", diag:159, typical:750 },
-    { equipmentKey:"ice_machine", diag:189, typical:950 }
-  ]},
-  { groupKey:"hotside", items:[
-    { equipmentKey:"oven", diag:159, typical:900 },
-    { equipmentKey:"fryer", diag:159, typical:800 }
-  ]},
-  { groupKey:"foodprep", items:[
-    { equipmentKey:"mixer", diag:159, typical:650 },
-    { equipmentKey:"slicer", diag:159, typical:550 }
-  ]},
-  { groupKey:"dishbev", items:[
-    { equipmentKey:"dishwasher", diag:159, typical:950 },
-    { equipmentKey:"espresso", diag:189, typical:900 }
-  ]}
-];
-
-const SERVICES = [
-  { id:"diagnostic_general", categoryKey:"general", equipmentKey:"all", price:159, min:159, max:159 },
-  { id:"walkin_diag", categoryKey:"refrigeration", equipmentKey:"walkin_cooler", price:199, min:199, max:249 },
-  { id:"ice_diag", categoryKey:"refrigeration", equipmentKey:"ice_machine", price:189, min:189, max:249 },
-  { id:"defrost", categoryKey:"refrigeration", equipmentKey:"walkin_freezer", price:249, min:249, max:499 },
-  { id:"coil_clean", categoryKey:"maintenance", equipmentKey:"walkin_cooler", price:249, min:199, max:399 },
-  { id:"leak_search", categoryKey:"refrigeration", equipmentKey:"walkin_cooler", price:399, min:349, max:699 },
-  { id:"recharge", categoryKey:"refrigeration", equipmentKey:"walkin_cooler", price:699, min:499, max:1499 },
-  { id:"fan_motor", categoryKey:"refrigeration", equipmentKey:"walkin_cooler", price:599, min:349, max:899 },
-  { id:"thermostat_ref", categoryKey:"refrigeration", equipmentKey:"reachin_cooler", price:499, min:299, max:799 },
-  { id:"compressor_diag", categoryKey:"refrigeration", equipmentKey:"walkin_cooler", price:299, min:249, max:399 },
-  { id:"compressor_replace", categoryKey:"refrigeration", equipmentKey:"walkin_cooler", price:4200, min:2500, max:7000 },
-  { id:"oven_diag", categoryKey:"hotside", equipmentKey:"oven", price:159, min:159, max:199 },
-  { id:"fryer_diag", categoryKey:"hotside", equipmentKey:"fryer", price:159, min:159, max:199 },
-  { id:"gas_check", categoryKey:"hotside", equipmentKey:"oven", price:299, min:249, max:499 },
-  { id:"igniter", categoryKey:"hotside", equipmentKey:"oven", price:499, min:299, max:699 },
-  { id:"gas_valve", categoryKey:"hotside", equipmentKey:"fryer", price:899, min:499, max:1499 },
-  { id:"thermostat_hot", categoryKey:"hotside", equipmentKey:"oven", price:599, min:299, max:799 },
-  { id:"mixer_diag", categoryKey:"foodprep", equipmentKey:"mixer", price:159, min:159, max:199 },
-  { id:"mixer_repair", categoryKey:"foodprep", equipmentKey:"mixer", price:699, min:299, max:1499 },
-  { id:"slicer_repair", categoryKey:"foodprep", equipmentKey:"slicer", price:499, min:299, max:999 },
-  { id:"dish_diag", categoryKey:"dishwashing", equipmentKey:"dishwasher", price:159, min:159, max:199 },
-  { id:"dish_pump", categoryKey:"dishwashing", equipmentKey:"dishwasher", price:899, min:499, max:1999 },
-  { id:"dish_heater", categoryKey:"dishwashing", equipmentKey:"dishwasher", price:799, min:399, max:1499 },
-  { id:"emergency", categoryKey:"priority", equipmentKey:"all", price:175, min:75, max:250 },
-  { id:"pm_monthly", categoryKey:"maintenance", equipmentKey:"all", price:299, min:249, max:599 }
-];
-
-const CAMPAIGNS = ["cold", "followup", "maintenance", "vip"];
+const templates = {
+  compressor: {
+    equipmentType: "walkin_cooler",
+    symptomRu: "Холодильная камера не держит температуру. Температура внутри выше нормы для безопасного хранения продуктов.",
+    symptomEn: "Walk-in cooler is not maintaining temperature. Box temperature is above safe food storage range.",
+    findingRu: "В ходе диагностики выявлен выход из строя компрессора. Компрессор не запускается/перегревается и не способен поддерживать рабочее давление системы охлаждения.",
+    findingEn: "Inspection found compressor failure. Compressor is not starting/overheating and is no longer capable of maintaining proper refrigeration system pressure.",
+    recommendationRu: "Рекомендуется заменить компрессор, фильтр-осушитель, выполнить проверку герметичности, вакуумирование системы, заправку хладагентом и запуск с проверкой температуры.",
+    recommendationEn: "Recommended repair: replace compressor and filter drier, perform leak/pressure test, evacuate system, recharge refrigerant, start up and verify operating temperature.",
+    items: [
+      { type: "service", nameRu: "Диагностика коммерческого оборудования", nameEn: "Commercial equipment diagnostic", qty: 1, price: 159 },
+      { type: "service", nameRu: "Замена компрессора: демонтаж, пайка, установка, запуск", nameEn: "Compressor replacement: removal, brazing, installation, startup", qty: 1, price: 2200 },
+      { type: "parts", nameRu: "Компрессор", nameEn: "Compressor", qty: 1, price: 1250 },
+      { type: "parts", nameRu: "Фильтр-осушитель", nameEn: "Filter drier", qty: 1, price: 95 },
+      { type: "parts", nameRu: "Хладагент / фреон", nameEn: "Refrigerant", qty: 1, price: 480 },
+      { type: "parts", nameRu: "Азот, пайка, расходные материалы", nameEn: "Nitrogen, brazing and shop materials", qty: 1, price: 175 },
+      { type: "service", nameRu: "Вакуумирование, проверка утечки, запуск и тест температуры", nameEn: "Vacuum, leak test, startup and temperature verification", qty: 1, price: 350 }
+    ]
+  },
+  mixer: {
+    equipmentType: "mixer",
+    symptomRu: "Миксер шумит, проскальзывает или не запускается под нагрузкой.",
+    symptomEn: "Mixer is noisy, slipping, or does not start under load.",
+    findingRu: "Диагностика показала износ приводных элементов/ремня/шестерен или электрическую неисправность узла запуска.",
+    findingEn: "Inspection found worn drive components/belt/gears or an electrical start component issue.",
+    recommendationRu: "Рекомендуется разобрать приводной узел, заменить неисправные детали, проверить работу под нагрузкой и выполнить тест безопасности.",
+    recommendationEn: "Recommended repair: disassemble drive assembly, replace failed components, test under load, and perform safety check.",
+    items: [
+      { type: "service", nameRu: "Диагностика миксера", nameEn: "Mixer diagnostic", qty: 1, price: 159 },
+      { type: "service", nameRu: "Ремонт приводного узла миксера", nameEn: "Mixer drive assembly repair", qty: 1, price: 420 },
+      { type: "parts", nameRu: "Запчасти миксера / приводные элементы", nameEn: "Mixer parts / drive components", qty: 1, price: 280 },
+      { type: "service", nameRu: "Тест под нагрузкой и проверка безопасности", nameEn: "Load test and safety verification", qty: 1, price: 120 }
+    ]
+  },
+  fryer: {
+    equipmentType: "fryer",
+    symptomRu: "Фритюрница не греет, плохо держит температуру или отключается.",
+    symptomEn: "Fryer is not heating, not holding temperature, or shuts off.",
+    findingRu: "Диагностика выявила неисправность термостата/розжига/газового клапана или загрязнение горелочного узла.",
+    findingEn: "Inspection found thermostat/ignition/gas valve issue or burner assembly contamination.",
+    recommendationRu: "Рекомендуется заменить неисправный компонент, очистить горелочный узел, проверить газовую часть и работу температуры.",
+    recommendationEn: "Recommended repair: replace failed component, clean burner assembly, check gas system, and verify temperature operation.",
+    items: [
+      { type: "service", nameRu: "Диагностика фритюрницы", nameEn: "Fryer diagnostic", qty: 1, price: 159 },
+      { type: "service", nameRu: "Ремонт системы нагрева / розжига", nameEn: "Heating / ignition system repair", qty: 1, price: 520 },
+      { type: "parts", nameRu: "Термостат / розжиг / газовый компонент", nameEn: "Thermostat / igniter / gas component", qty: 1, price: 280 },
+      { type: "service", nameRu: "Очистка, запуск и проверка температуры", nameEn: "Cleaning, startup and temperature verification", qty: 1, price: 150 }
+    ]
+  },
+  dishwasher: {
+    equipmentType: "dishwasher",
+    symptomRu: "Посудомоечная машина не греет воду, плохо моет или выдает ошибку.",
+    symptomEn: "Dishwasher is not heating, washing poorly, or showing an error.",
+    findingRu: "Диагностика выявила неисправность нагревателя/насоса/датчика или загрязнение системы подачи воды.",
+    findingEn: "Inspection found heater/pump/sensor issue or water delivery system contamination.",
+    recommendationRu: "Рекомендуется заменить неисправный узел, очистить систему, проверить температуру воды и цикл мойки.",
+    recommendationEn: "Recommended repair: replace failed assembly, clean system, verify water temperature and wash cycle operation.",
+    items: [
+      { type: "service", nameRu: "Диагностика посудомоечной машины", nameEn: "Dishwasher diagnostic", qty: 1, price: 159 },
+      { type: "service", nameRu: "Ремонт узла нагрева / насоса", nameEn: "Heater / pump assembly repair", qty: 1, price: 650 },
+      { type: "parts", nameRu: "Нагреватель / насос / датчик", nameEn: "Heater / pump / sensor", qty: 1, price: 420 },
+      { type: "service", nameRu: "Очистка, запуск и тест цикла мойки", nameEn: "Cleaning, startup and wash cycle test", qty: 1, price: 180 }
+    ]
+  }
+};
 
 export default function Page() {
   const [lang, setLang] = useState("ru");
   const t = UI[lang];
-  const [clients, setClients] = useState(CLIENTS);
-  const [selected, setSelected] = useState(CLIENTS[0]);
-  const [tech, setTech] = useState(TECHS[0]);
-  const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [sourceFilter, setSourceFilter] = useState("");
-  const [selectedServices, setSelectedServices] = useState(["diagnostic_general"]);
-  const [parts, setParts] = useState(0);
-  const [discount, setDiscount] = useState(0);
-  const [taxRate, setTaxRate] = useState(0);
-  const [campaign, setCampaign] = useState("cold");
-  const [forecast, setForecast] = useState({ target: 5000, avgTicket: 1200, closeRate: 12 });
 
-  const filteredClients = useMemo(() => clients.filter(c => {
-    const blob = [
-      c.business, c.contact, c.phone, c.email, c.address, c.city, c.source,
-      t.businessTypes[c.typeKey], t.status[c.statusKey], t.equipment[c.equipmentKey],
-      lang === "ru" ? c.issueRu : c.issueEn
-    ].join(" ").toLowerCase();
-    return (!query || blob.includes(query.toLowerCase())) &&
-      (!statusFilter || c.statusKey === statusFilter) &&
-      (!sourceFilter || c.source === sourceFilter);
-  }), [clients, query, statusFilter, sourceFilter, lang]);
+  const [estimate, setEstimate] = useState({
+    number: "EST-1001",
+    date: new Date().toISOString().slice(0,10),
+    validUntil: new Date(Date.now()+30*24*60*60*1000).toISOString().slice(0,10),
+    business: "Demo Pizza Tampa",
+    contact: "Manager",
+    phone: "(813) 555-0101",
+    email: "manager@example.com",
+    address: "Tampa, FL",
+    technician: "Alex - Commercial Equipment Tech",
+    equipmentType: "walkin_cooler",
+    manufacturer: "True / Walk-in system",
+    model: "Unknown",
+    serial: "Unknown",
+    symptomRu: templates.compressor.symptomRu,
+    symptomEn: templates.compressor.symptomEn,
+    findingRu: templates.compressor.findingRu,
+    findingEn: templates.compressor.findingEn,
+    recommendationRu: templates.compressor.recommendationRu,
+    recommendationEn: templates.compressor.recommendationEn,
+    notesRu: "Работы выполняются после подтверждения estimate заказчиком.",
+    notesEn: "Work will be performed after customer approval.",
+    taxRate: 0,
+    discount: 0,
+    items: templates.compressor.items
+  });
 
-  const pickedServices = SERVICES.filter(s => selectedServices.includes(s.id));
-  const servicesTotal = pickedServices.reduce((sum, s) => sum + s.price, 0);
-  const tax = (servicesTotal + parts) * taxRate / 100;
-  const total = servicesTotal + parts + tax - discount;
+  const subtotal = useMemo(() => estimate.items.reduce((sum, item) => sum + Number(item.qty || 0) * Number(item.price || 0), 0), [estimate.items]);
+  const tax = subtotal * Number(estimate.taxRate || 0) / 100;
+  const total = subtotal + tax - Number(estimate.discount || 0);
 
-  const stats = useMemo(() => {
-    const recurring = clients.filter(c => c.statusKey === "customer" || c.statusKey === "vip").length;
-    const pipeline = clients
-      .filter(c => ["lead", "contacted", "estimate_sent", "follow_up"].includes(c.statusKey))
-      .reduce((sum,c)=>sum+c.avgTicket,0);
-    const avg = Math.round(clients.reduce((sum,c)=>sum+c.avgTicket,0)/clients.length);
-    return { clients: clients.length, recurring, pipeline, avg };
-  }, [clients]);
-
-  const statusData = STATUS_KEYS.map(s => ({ name: t.status[s], count: clients.filter(c=>c.statusKey===s).length }));
-  const sourceData = Array.from(new Set(clients.map(c=>c.source))).map(s=>({ name:s, value:clients.filter(c=>c.source===s).length }));
-  const revenueData = [
-    { day: lang === "ru" ? "Пн" : "Mon", revenue:1200 },
-    { day: lang === "ru" ? "Вт" : "Tue", revenue:2600 },
-    { day: lang === "ru" ? "Ср" : "Wed", revenue:4200 },
-    { day: lang === "ru" ? "Чт" : "Thu", revenue:6100 },
-    { day: lang === "ru" ? "Пт" : "Fri", revenue:7800 }
-  ];
-
-  const jobsNeeded = Math.ceil(Number(forecast.target || 0) / Math.max(1, Number(forecast.avgTicket || 1)));
-  const leadsNeeded = Math.ceil(jobsNeeded / Math.max(0.01, Number(forecast.closeRate || 1)/100));
-
-  const estimateText = buildEstimate({ lang, t, selected, tech, pickedServices, parts, tax, discount, total });
-  const email = buildEmail({ lang, t, selected, campaign });
-
-  function toggleService(id) {
-    setSelectedServices(prev => prev.includes(id) ? prev.filter(x=>x!==id) : [...prev, id]);
+  function patch(key, value) {
+    setEstimate(prev => ({ ...prev, [key]: value }));
   }
 
-  function copy(text) {
-    navigator.clipboard.writeText(text);
-    alert(t.copied);
+  function applyTemplate(key) {
+    const tpl = templates[key];
+    setEstimate(prev => ({
+      ...prev,
+      equipmentType: tpl.equipmentType,
+      symptomRu: tpl.symptomRu,
+      symptomEn: tpl.symptomEn,
+      findingRu: tpl.findingRu,
+      findingEn: tpl.findingEn,
+      recommendationRu: tpl.recommendationRu,
+      recommendationEn: tpl.recommendationEn,
+      items: tpl.items
+    }));
   }
 
-  function updateClientStatus(id, statusKey) {
-    setClients(prev => prev.map(c => c.id === id ? { ...c, statusKey } : c));
-    if (selected.id === id) setSelected({ ...selected, statusKey });
+  function updateItem(index, key, value) {
+    setEstimate(prev => {
+      const items = [...prev.items];
+      items[index] = { ...items[index], [key]: value };
+      return { ...prev, items };
+    });
+  }
+
+  function addItem() {
+    setEstimate(prev => ({
+      ...prev,
+      items: [...prev.items, { type: "service", nameRu: "Новая услуга", nameEn: "New service", qty: 1, price: 0 }]
+    }));
+  }
+
+  function removeItem(index) {
+    setEstimate(prev => ({ ...prev, items: prev.items.filter((_, i) => i !== index) }));
+  }
+
+  function makePdf() {
+    const doc = new jsPDF({ unit: "pt", format: "letter" });
+    const W = 612;
+    let y = 36;
+
+    const navy = [15, 23, 42];
+    const blue = [37, 99, 235];
+    const orange = [249, 115, 22];
+    const gray = [100, 116, 139];
+
+    function money(v) { return "$" + Number(v || 0).toFixed(2); }
+    function text(str, x, yy, size=10, color=navy, style="normal", maxWidth=520) {
+      doc.setFont("helvetica", style);
+      doc.setFontSize(size);
+      doc.setTextColor(...color);
+      const lines = doc.splitTextToSize(String(str || ""), maxWidth);
+      doc.text(lines, x, yy);
+      return yy + lines.length * (size + 3);
+    }
+    function line(x1, yy, x2) {
+      doc.setDrawColor(226, 232, 240);
+      doc.line(x1, yy, x2, yy);
+    }
+    function section(title) {
+      y += 18;
+      doc.setFillColor(239, 246, 255);
+      doc.roundedRect(36, y-13, 540, 24, 6, 6, "F");
+      y = text(title, 48, y+3, 11, blue, "bold");
+      y += 6;
+    }
+    function checkLine(str) {
+      doc.setTextColor(...blue);
+      doc.setFontSize(11);
+      doc.text("✓", 48, y);
+      y = text(str, 66, y, 10, navy, "normal", 480) + 2;
+    }
+
+    // Header
+    doc.setFillColor(...navy);
+    doc.roundedRect(36, 30, 540, 86, 12, 12, "F");
+    doc.setFillColor(...orange);
+    doc.circle(72, 73, 24, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(24);
+    doc.setTextColor(255,255,255);
+    doc.text("F", 64, 82);
+    doc.setFontSize(18);
+    doc.text("FORTEN", 108, 62);
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+    doc.text("Commercial Equipment Services", 108, 80);
+    doc.text("Commercial Kitchen Equipment Repair & Maintenance", 108, 96);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text(estimate.number, 430, 60);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.text(`${t.date}: ${estimate.date}`, 430, 78);
+    doc.text(`${t.validUntil}: ${estimate.validUntil}`, 430, 94);
+
+    y = 145;
+    doc.setTextColor(...navy);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text(lang === "ru" ? "ESTIMATE / ПРЕДЛОЖЕНИЕ НА РЕМОНТ" : "REPAIR ESTIMATE / WORK ORDER", 36, y);
+    y += 20;
+    y = text(t.serviceLine, 36, y, 10, gray, "normal", 540);
+
+    // Customer / equipment
+    section(t.customer);
+    y = text(`${t.businessName}: ${estimate.business}`, 48, y, 10, navy, "bold");
+    y = text(`${t.contact}: ${estimate.contact}   ${t.phone}: ${estimate.phone}`, 48, y);
+    y = text(`${t.email}: ${estimate.email}   ${t.address}: ${estimate.address}`, 48, y);
+    y = text(`${t.technician}: ${estimate.technician}`, 48, y);
+
+    section(t.equipment);
+    y = text(`${t.equipmentType}: ${t.equipmentOptions[estimate.equipmentType]}`, 48, y, 10, navy, "bold");
+    y = text(`${t.manufacturer}: ${estimate.manufacturer}   ${t.model}: ${estimate.model}   ${t.serial}: ${estimate.serial}`, 48, y);
+
+    section(t.diagnostic);
+    y = text(`${t.symptom}: ${lang === "ru" ? estimate.symptomRu : estimate.symptomEn}`, 48, y, 10, navy, "normal", 500);
+    y += 4;
+    y = text(`${t.finding}: ${lang === "ru" ? estimate.findingRu : estimate.findingEn}`, 48, y, 10, navy, "normal", 500);
+    y += 4;
+    y = text(`${t.recommendation}: ${lang === "ru" ? estimate.recommendationRu : estimate.recommendationEn}`, 48, y, 10, navy, "normal", 500);
+
+    section(t.workIncluded);
+    estimate.items.forEach(item => {
+      checkLine(lang === "ru" ? item.nameRu : item.nameEn);
+      if (y > 690) { doc.addPage(); y = 50; }
+    });
+
+    section(t.price);
+    const startY = y;
+    doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(...gray);
+    doc.text("#", 48, y); doc.text(lang === "ru" ? "Описание" : "Description", 72, y); doc.text(t.qty, 372, y); doc.text(t.unit, 430, y); doc.text(t.amount, 500, y);
+    y += 10; line(48, y, 550); y += 14;
+
+    doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(...navy);
+    estimate.items.forEach((item, i) => {
+      const name = lang === "ru" ? item.nameRu : item.nameEn;
+      doc.text(String(i+1), 48, y);
+      doc.text(doc.splitTextToSize(name, 285), 72, y);
+      doc.text(String(item.qty), 380, y);
+      doc.text(money(item.price), 430, y);
+      doc.text(money(item.qty * item.price), 500, y);
+      y += Math.max(18, doc.splitTextToSize(name, 285).length * 12);
+      if (y > 700) { doc.addPage(); y = 50; }
+    });
+
+    y += 8; line(350, y, 550); y += 16;
+    doc.setFont("helvetica", "normal"); doc.setFontSize(10);
+    doc.text(`${t.subtotal}: ${money(subtotal)}`, 390, y); y += 16;
+    doc.text(`${t.tax}: ${money(tax)}`, 390, y); y += 16;
+    doc.text(`${t.discount}: -${money(estimate.discount)}`, 390, y); y += 18;
+    doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.setTextColor(...orange);
+    doc.text(`${t.total}: ${money(total)}`, 390, y); y += 12;
+
+    if (y > 600) { doc.addPage(); y = 50; }
+    section(t.warranty);
+    y = text(t.warrantyText, 48, y, 10, navy, "normal", 500);
+    section(t.terms);
+    y = text(t.termsText, 48, y, 9, gray, "normal", 500);
+
+    y += 28;
+    doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.setTextColor(...navy);
+    doc.text(t.customerApproval, 48, y);
+    y += 34;
+    line(48, y, 275);
+    line(330, y, 550);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(...gray);
+    doc.text(lang === "ru" ? "Имя заказчика" : "Customer name", 48, y+14);
+    doc.text(t.signature, 330, y+14);
+
+    doc.save(`${estimate.number}-Forten-Estimate-${lang}.pdf`);
   }
 
   return (
@@ -462,314 +433,124 @@ export default function Page() {
       <section className="hero">
         <div>
           <div className="topLine">
-            <div className="eyebrow">{t.heroBadge}</div>
-            <button className="langBtn" onClick={()=>setLang(lang === "ru" ? "en" : "ru")}><Languages size={18}/>{t.langButton}</button>
+            <span className="eyebrow">{t.badge}</span>
+            <button className="langBtn" onClick={() => setLang(lang === "ru" ? "en" : "ru")}><Languages size={18}/>{t.switch}</button>
           </div>
           <h1>{t.title}</h1>
           <p>{t.subtitle}</p>
         </div>
-        <div className="heroCard"><Database size={38}/><div><b>{t.heroCardTitle}</b><span>{t.heroCardText}</span></div></div>
+        <div className="heroCard">
+          <div className="logoMark">F</div>
+          <div><b>FORTEN</b><span>Commercial Equipment Services</span></div>
+        </div>
       </section>
 
-      <section className="statsGrid">
-        <Stat icon={Users} label={t.statsClients} value={stats.clients}/>
-        <Stat icon={TrendingUp} label={t.statsPipeline} value={money(stats.pipeline)}/>
-        <Stat icon={DollarSign} label={t.statsAvgTicket} value={money(stats.avg)}/>
-        <Stat icon={Star} label={t.statsRecurring} value={stats.recurring}/>
+      <section className="quickTemplates">
+        <button onClick={() => applyTemplate("compressor")}><Wrench size={18}/>{t.compressorTemplate}</button>
+        <button onClick={() => applyTemplate("mixer")}><Wrench size={18}/>{t.mixerTemplate}</button>
+        <button onClick={() => applyTemplate("fryer")}><Wrench size={18}/>{t.fryerTemplate}</button>
+        <button onClick={() => applyTemplate("dishwasher")}><Wrench size={18}/>{t.dishwasherTemplate}</button>
+        <button className="downloadBtn" onClick={makePdf}><Download size={18}/>{t.generatePdf}</button>
       </section>
 
       <section className="grid">
-        <div className="card clientsCard">
-          <div className="cardHeader"><div><h2>{t.crmTitle}</h2><p>{t.crmDesc}</p></div></div>
-          <div className="filters">
-            <div className="searchBox"><Search size={18}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder={t.searchPlaceholder}/></div>
-            <select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)}>
-              <option value="">{t.allStatuses}</option>
-              {STATUS_KEYS.map(s=><option key={s} value={s}>{t.status[s]}</option>)}
-            </select>
-            <select value={sourceFilter} onChange={e=>setSourceFilter(e.target.value)}>
-              <option value="">{t.allSources}</option>
-              {Array.from(new Set(clients.map(c=>c.source))).map(s=><option key={s}>{s}</option>)}
-            </select>
-          </div>
-
-          <div className="clientList">
-            {filteredClients.map(c=>(
-              <article className={"clientCard " + (selected.id===c.id ? "active" : "")} key={c.id} onClick={()=>setSelected(c)}>
-                <div className="clientTop">
-                  <div><h3>{c.business}</h3><p><MapPin size={14}/> {c.city} · {t.businessTypes[c.typeKey]}</p></div>
-                  <span className="badge">{t.status[c.statusKey]}</span>
-                </div>
-                <div className="mini">
-                  <span><UserRound size={14}/> {c.contact}</span>
-                  <span><Send size={14}/> {t.leadSource}: {c.source}</span>
-                  <span><Wrench size={14}/> {t.equipment[c.equipmentKey]}</span>
-                </div>
-                <div className="issue">{lang === "ru" ? c.issueRu : c.issueEn}</div>
-                <div className="clientFooter">
-                  <b>{money(c.avgTicket)}</b>
-                  <div className="actions">
-                    <a href={`tel:${c.phone}`}><Phone size={16}/></a>
-                    <a href={`sms:${c.phone}`}><MessageSquare size={16}/></a>
-                    {c.email && <a href={`mailto:${c.email}`}><Mail size={16}/></a>}
-                  </div>
-                </div>
-                <div className="statusButtons">
-                  {["contacted","estimate_sent","customer","vip"].map(s=><button key={s} onClick={(e)=>{e.stopPropagation(); updateClientStatus(c.id, s)}}>{t.status[s]}</button>)}
-                </div>
-              </article>
-            ))}
+        <div className="card">
+          <h2><Building2 size={22}/>{t.customer}</h2>
+          <div className="formGrid">
+            <Input label={t.estimateNo} value={estimate.number} onChange={v => patch("number", v)} />
+            <Input label={t.date} type="date" value={estimate.date} onChange={v => patch("date", v)} />
+            <Input label={t.validUntil} type="date" value={estimate.validUntil} onChange={v => patch("validUntil", v)} />
+            <Input label={t.businessName} value={estimate.business} onChange={v => patch("business", v)} />
+            <Input label={t.contact} value={estimate.contact} onChange={v => patch("contact", v)} />
+            <Input label={t.phone} value={estimate.phone} onChange={v => patch("phone", v)} />
+            <Input label={t.email} value={estimate.email} onChange={v => patch("email", v)} />
+            <Input label={t.address} value={estimate.address} onChange={v => patch("address", v)} />
+            <Input label={t.technician} value={estimate.technician} onChange={v => patch("technician", v)} />
           </div>
         </div>
 
         <div className="card">
-          <h2>{t.funnel}</h2>
-          <div className="chartBox"><ResponsiveContainer width="100%" height={220}><BarChart data={statusData}><XAxis dataKey="name" tick={{fontSize:10}}/><YAxis allowDecimals={false}/><Tooltip/><Bar dataKey="count" radius={[10,10,0,0]}/></BarChart></ResponsiveContainer></div>
-        </div>
-
-        <div className="card">
-          <h2>{t.sources}</h2>
-          <div className="chartBox"><ResponsiveContainer width="100%" height={220}><PieChart><Pie data={sourceData} dataKey="value" nameKey="name" outerRadius={80} label/><Tooltip/></PieChart></ResponsiveContainer></div>
-        </div>
-
-        <div className="card">
-          <h2>{t.revenue}</h2>
-          <div className="chartBox"><ResponsiveContainer width="100%" height={220}><LineChart data={revenueData}><CartesianGrid strokeDasharray="3 3"/><XAxis dataKey="day"/><YAxis/><Tooltip/><Line type="monotone" dataKey="revenue" strokeWidth={3}/></LineChart></ResponsiveContainer></div>
-        </div>
-
-        <div className="card forecastCard">
-          <h2>{t.forecastTitle}</h2><p>{t.forecastDesc}</p>
-          <div className="forecastGrid">
-            <Num label={t.dailyTarget} value={forecast.target} onChange={v=>setForecast({...forecast,target:v})}/>
-            <Num label={t.avgTicket} value={forecast.avgTicket} onChange={v=>setForecast({...forecast,avgTicket:v})}/>
-            <Num label={t.closeRate} value={forecast.closeRate} onChange={v=>setForecast({...forecast,closeRate:v})}/>
-          </div>
-          <div className="forecastResult">
-            <div><span>{t.jobsNeeded}</span><b>{jobsNeeded}</b></div>
-            <div><span>{t.leadsNeeded}</span><b>{leadsNeeded}</b></div>
-          </div>
-        </div>
-
-        <div className="card estimateCard">
-          <div className="cardHeader"><div><h2>{t.estimateTitle}</h2><p>{t.estimateDesc}</p></div><div className="iconBox"><FileText/></div></div>
-
-          <div className="infoGrid">
-            <Info title={t.business} lines={[selected.business, t.businessTypes[selected.typeKey], selected.contact, selected.phone, selected.email || t.noEmail]}/>
-            <Info title={t.serviceLocation} lines={[selected.address, selected.city, `${t.leadSource}: ${selected.source}`, `${t.customerStatus}: ${t.status[selected.statusKey]}`]}/>
-            <div className="infoBox">
-              <h3>{t.technician}</h3>
-              <select value={tech.id} onChange={e=>setTech(TECHS.find(x=>x.id===e.target.value))}>
-                {TECHS.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}
+          <h2><Wrench size={22}/>{t.equipment}</h2>
+          <div className="formGrid">
+            <div>
+              <label>{t.equipmentType}</label>
+              <select value={estimate.equipmentType} onChange={e => patch("equipmentType", e.target.value)}>
+                {Object.keys(t.equipmentOptions).map(k => <option key={k} value={k}>{t.equipmentOptions[k]}</option>)}
               </select>
-              <p>{lang === "ru" ? tech.roleRu : tech.roleEn}</p>
-              <p>{lang === "ru" ? tech.areaRu : tech.areaEn}</p>
             </div>
+            <Input label={t.manufacturer} value={estimate.manufacturer} onChange={v => patch("manufacturer", v)} />
+            <Input label={t.model} value={estimate.model} onChange={v => patch("model", v)} />
+            <Input label={t.serial} value={estimate.serial} onChange={v => patch("serial", v)} />
+          </div>
+        </div>
+
+        <div className="card wide">
+          <h2><ClipboardCheck size={22}/>{t.diagnostic}</h2>
+          <label>{t.symptom}</label>
+          <textarea value={lang === "ru" ? estimate.symptomRu : estimate.symptomEn} onChange={e => patch(lang === "ru" ? "symptomRu" : "symptomEn", e.target.value)} />
+          <label>{t.finding}</label>
+          <textarea value={lang === "ru" ? estimate.findingRu : estimate.findingEn} onChange={e => patch(lang === "ru" ? "findingRu" : "findingEn", e.target.value)} />
+          <label>{t.recommendation}</label>
+          <textarea value={lang === "ru" ? estimate.recommendationRu : estimate.recommendationEn} onChange={e => patch(lang === "ru" ? "recommendationRu" : "recommendationEn", e.target.value)} />
+        </div>
+
+        <div className="card wide">
+          <div className="cardHeader">
+            <h2><Calculator size={22}/>{t.price}</h2>
+            <button className="secondaryBtn" onClick={addItem}><PlusCircle size={18}/>{t.addItem}</button>
           </div>
 
-          <h3 className="sectionTitle">{t.equipmentPriceBook}</h3>
-          <div className="equipmentGroups">
-            {EQUIPMENT_GROUPS.map(g => (
-              <div className="equipmentGroup" key={g.groupKey}>
-                <h4>{t.equipmentGroups[g.groupKey]}</h4>
-                {g.items.map(item => <div className="equipmentLine" key={item.equipmentKey}><span>{t.equipment[item.equipmentKey]}</span><b>{money(item.diag)} diag · avg {money(item.typical)}</b></div>)}
+          <div className="items">
+            {estimate.items.map((item, i) => (
+              <div className="itemRow" key={i}>
+                <select value={item.type} onChange={e => updateItem(i, "type", e.target.value)}>
+                  <option value="service">{t.service}</option>
+                  <option value="parts">{t.parts}</option>
+                </select>
+                <input value={lang === "ru" ? item.nameRu : item.nameEn} onChange={e => updateItem(i, lang === "ru" ? "nameRu" : "nameEn", e.target.value)} />
+                <input type="number" value={item.qty} onChange={e => updateItem(i, "qty", Number(e.target.value))} />
+                <input type="number" value={item.price} onChange={e => updateItem(i, "price", Number(e.target.value))} />
+                <b>{"$" + (item.qty * item.price).toFixed(2)}</b>
+                <button className="iconBtn" onClick={() => removeItem(i)}><Trash2 size={16}/></button>
               </div>
             ))}
           </div>
 
-          <h3 className="sectionTitle">{t.workScope}</h3>
-          <div className="servicesGrid">
-            {SERVICES.map(s=>(
-              <button className={"serviceItem " + (selectedServices.includes(s.id) ? "selected" : "")} key={s.id} onClick={()=>toggleService(s.id)}>
-                <b>{t.service[s.id]}</b>
-                <span>{t.categories[s.categoryKey]} · {s.equipmentKey === "all" ? "All" : t.equipment[s.equipmentKey]}</span>
-                <strong>{money(s.price)}</strong>
-                <small>{money(s.min)}–{money(s.max)}</small>
-              </button>
-            ))}
+          <div className="totals">
+            <div><span>{t.subtotal}</span><b>{"$" + subtotal.toFixed(2)}</b></div>
+            <div><span>{t.tax}</span><input type="number" value={estimate.taxRate} onChange={e => patch("taxRate", Number(e.target.value))}/></div>
+            <div><span>{t.discount}</span><input type="number" value={estimate.discount} onChange={e => patch("discount", Number(e.target.value))}/></div>
+            <div className="grand"><span>{t.total}</span><b>{"$" + total.toFixed(2)}</b></div>
           </div>
-
-          <h3 className="sectionTitle">{t.calculation}</h3>
-          <div className="calcGrid">
-            <Read label={t.servicesTotal} value={money(servicesTotal)}/>
-            <Num label={t.partsMaterials} value={parts} onChange={setParts}/>
-            <Num label={t.tax} value={taxRate} onChange={setTaxRate}/>
-            <Num label={t.discount} value={discount} onChange={setDiscount}/>
-          </div>
-
-          <div className="priceBox"><span>{t.total}</span><b>{money(total)}</b><small>{t.servicesTotal}: {money(servicesTotal)} · {t.partsMaterials}: {money(parts)} · {t.tax}: {money(tax)} · {t.discount}: {money(discount)}</small></div>
-
-          <textarea className="documentText" readOnly value={estimateText}/>
-          <button className="primaryBtn full" onClick={()=>copy(estimateText)}>{t.copyEstimate}</button>
         </div>
 
-        <div className="card marketingCard">
-          <div className="cardHeader"><div><h2>{t.marketingTitle}</h2><p>{t.marketingDesc}</p></div><div className="iconBox"><Megaphone/></div></div>
-          <label>{t.campaign}</label>
-          <select value={campaign} onChange={e=>setCampaign(e.target.value)}>
-            {CAMPAIGNS.map(c=><option key={c} value={c}>{t.campaigns[c]}</option>)}
-          </select>
-          <label>{t.subject}</label>
-          <input readOnly value={email.subject}/>
-          <label>{t.emailBody}</label>
-          <textarea className="emailText" readOnly value={email.body}/>
-          <button className="primaryBtn full" onClick={()=>copy(email.subject + "\n\n" + email.body)}>{t.copyEmail}</button>
+        <div className="card">
+          <h2><ShieldCheck size={22}/>{t.warranty}</h2>
+          <p>{t.warrantyText}</p>
+          <h3>{t.terms}</h3>
+          <p>{t.termsText}</p>
+        </div>
+
+        <div className="card previewCard">
+          <h2><FileText size={22}/>{t.pdf}</h2>
+          <div className="pdfPreview">
+            <div className="pdfHead">
+              <div className="logoMark small">F</div>
+              <div><b>FORTEN</b><span>{t.tagline}</span></div>
+            </div>
+            <h3>{estimate.number}</h3>
+            <p>{estimate.business}</p>
+            <p>{t.equipmentOptions[estimate.equipmentType]}</p>
+            <p>{lang === "ru" ? estimate.findingRu : estimate.findingEn}</p>
+            <div className="previewTotal">{"$" + total.toFixed(2)}</div>
+          </div>
+          <button className="downloadWide" onClick={makePdf}><Download size={18}/>{t.generatePdf}</button>
         </div>
       </section>
     </main>
   );
 }
 
-function buildEstimate({ lang, t, selected, tech, pickedServices, parts, tax, discount, total }) {
-  const today = new Date().toISOString().slice(0,10);
-  const no = "EST-" + today.replaceAll("-","") + "-" + selected.id.toString().padStart(3,"0");
-  const issue = lang === "ru" ? selected.issueRu : selected.issueEn;
-  const notes = lang === "ru" ? selected.notesRu : selected.notesEn;
-  const role = lang === "ru" ? tech.roleRu : tech.roleEn;
-  const area = lang === "ru" ? tech.areaRu : tech.areaEn;
-
-  if (lang === "ru") {
-    return `${t.estimateHeader}
-
-${t.estimateTitle}: ${no}
-${t.date || "Дата"}: ${today}
-
-${t.business.toUpperCase()}
-Название: ${selected.business}
-Тип бизнеса: ${t.businessTypes[selected.typeKey]}
-Контакт: ${selected.contact}
-Телефон: ${selected.phone}
-Email: ${selected.email || "N/A"}
-
-${t.serviceLocation.toUpperCase()}
-Адрес: ${selected.address}
-Город / район: ${selected.city}
-
-CRM
-${t.leadSource}: ${selected.source}
-${t.customerStatus}: ${t.status[selected.statusKey]}
-${t.notes}: ${notes}
-
-${t.assignedTech.toUpperCase()}
-${t.technician}: ${tech.name}
-Телефон: ${tech.phone || "N/A"}
-Зона работы: ${area}
-Специализация: ${role}
-
-${t.reportedIssue.toUpperCase()}
-${t.equipment[selected.equipmentKey]}
-Проблема: ${issue}
-
-${t.workToPerform.toUpperCase()}
-${pickedServices.map((s,i)=>`${i+1}. ${t.service[s.id]} — ${t.categories[s.categoryKey]} — ${money(s.price)} (диапазон ${money(s.min)}–${money(s.max)})`).join("\n")}
-
-${t.priceBreakdown.toUpperCase()}
-${t.servicesTotal}: ${money(pickedServices.reduce((sum,s)=>sum+s.price,0))}
-${t.partsMaterials}: ${money(parts)}
-Налог: ${money(tax)}
-Скидка: -${money(discount)}
-
-${t.total.toUpperCase()}: ${money(total)}
-
-${t.termsTitle.toUpperCase()}
-${t.terms}`;
-  }
-
-  return `${t.estimateHeader}
-
-${t.estimateTitle}: ${no}
-Date: ${today}
-
-CUSTOMER
-Business: ${selected.business}
-Business type: ${t.businessTypes[selected.typeKey]}
-Contact: ${selected.contact}
-Phone: ${selected.phone}
-Email: ${selected.email || "N/A"}
-
-SERVICE LOCATION
-Address: ${selected.address}
-City / Area: ${selected.city}
-
-CRM
-${t.leadSource}: ${selected.source}
-${t.customerStatus}: ${t.status[selected.statusKey]}
-${t.notes}: ${notes}
-
-ASSIGNED TECHNICIAN
-${t.technician}: ${tech.name}
-Phone: ${tech.phone || "N/A"}
-Service area: ${area}
-Specialty: ${role}
-
-REPORTED ISSUE
-${t.equipment[selected.equipmentKey]}
-Issue: ${issue}
-
-WORK TO BE PERFORMED
-${pickedServices.map((s,i)=>`${i+1}. ${t.service[s.id]} — ${t.categories[s.categoryKey]} — ${money(s.price)} (range ${money(s.min)}–${money(s.max)})`).join("\n")}
-
-PRICE BREAKDOWN
-${t.servicesTotal}: ${money(pickedServices.reduce((sum,s)=>sum+s.price,0))}
-${t.partsMaterials}: ${money(parts)}
-Tax: ${money(tax)}
-Discount: -${money(discount)}
-
-${t.total.toUpperCase()}: ${money(total)}
-
-TERMS
-${t.terms}`;
+function Input({ label, value, onChange, type = "text" }) {
+  return <div><label>{label}</label><input type={type} value={value} onChange={e => onChange(e.target.value)} /></div>;
 }
-
-function buildEmail({ lang, t, selected, campaign }) {
-  const contact = selected.contact;
-  const business = selected.business;
-  const equipment = t.equipment[selected.equipmentKey];
-
-  if (lang === "ru") {
-    const map = {
-      cold: {
-        subject: `Ремонт ресторанного оборудования — ${business}`,
-        body: `Здравствуйте, ${contact}.\n\nМы ремонтируем коммерческое ресторанное оборудование во Флориде: холодильные камеры, морозильники, льдогенераторы, плиты, печи, фритюрницы, посудомойки, миксеры, слайсеры, кофемашины и другое оборудование кухни.\n\nДиагностика от $159. Возможен срочный выезд. Также предлагаем профилактическое обслуживание, чтобы техника не остановилась в самый загруженный день.\n\nЕсли у вас есть оборудование, которое плохо охлаждает, не греет, течет, шумит или отключается — можем помочь.\n\nСпасибо.`
-      },
-      followup: {
-        subject: `Follow-up по оборудованию — ${business}`,
-        body: `Здравствуйте, ${contact}.\n\nЯ хотел уточнить по вашему оборудованию: ${equipment}. Если проблема еще актуальна, мы можем подготовить estimate и назначить техника.\n\nДиагностика от $159. Работаем с холодильным, горячим и кухонным оборудованием для ресторанов.\n\nСпасибо.`
-      },
-      maintenance: {
-        subject: `Профилактика ресторанного оборудования — ${business}`,
-        body: `Здравствуйте, ${contact}.\n\nНапоминаем о профилактическом обслуживании ресторанного оборудования. Регулярная чистка, проверка температуры, вентиляторов, льда, утечек и электрических соединений помогает избежать дорогого аварийного ремонта.\n\nМожем предложить monthly / quarterly maintenance для вашего бизнеса.\n\nСпасибо.`
-      },
-      vip: {
-        subject: `Приоритетный сервис для постоянных клиентов — ${business}`,
-        body: `Здравствуйте, ${contact}.\n\nДля постоянных клиентов мы предлагаем приоритетный сервис, плановое обслуживание и быстрый emergency response для холодильников, морозильников, льдогенераторов, фритюрниц, печей, посудомоек и другой техники.\n\nЭто помогает снизить простой кухни и расходы на аварийный ремонт.\n\nСпасибо.`
-      }
-    };
-    return map[campaign];
-  }
-
-  const map = {
-    cold: {
-      subject: `Restaurant equipment repair — ${business}`,
-      body: `Hello ${contact},\n\nWe service and repair commercial restaurant equipment in Florida: walk-in coolers, freezers, ice machines, ovens, fryers, dishwashers, mixers, slicers, coffee machines, and other kitchen equipment.\n\nDiagnostics start at $159. Emergency service is available. We also offer preventive maintenance to help avoid equipment failure during busy hours.\n\nIf your equipment is not cooling, not heating, leaking, noisy, or shutting down, we can help.\n\nThank you.`
-    },
-    followup: {
-      subject: `Follow-up regarding your equipment — ${business}`,
-      body: `Hello ${contact},\n\nI wanted to follow up regarding your ${equipment}. If the issue is still active, we can prepare an estimate and assign a technician.\n\nDiagnostics start at $159. We service refrigeration, hot-side, and general commercial kitchen equipment.\n\nThank you.`
-    },
-    maintenance: {
-      subject: `Restaurant equipment preventive maintenance — ${business}`,
-      body: `Hello ${contact},\n\nThis is a reminder about preventive maintenance for your restaurant equipment. Regular cleaning, temperature checks, fan checks, ice machine checks, leak checks, and electrical inspections can help prevent expensive emergency repairs.\n\nWe can offer monthly or quarterly maintenance for your business.\n\nThank you.`
-    },
-    vip: {
-      subject: `Priority service for recurring customers — ${business}`,
-      body: `Hello ${contact},\n\nFor recurring customers, we offer priority service, scheduled maintenance, and faster emergency response for coolers, freezers, ice machines, fryers, ovens, dishwashers, and other restaurant equipment.\n\nThis helps reduce kitchen downtime and emergency repair costs.\n\nThank you.`
-    }
-  };
-  return map[campaign];
-}
-
-function Stat({ icon: Icon, label, value }) { return <div className="statCard"><div className="statIcon"><Icon size={22}/></div><span>{label}</span><b>{value}</b></div>; }
-function Info({ title, lines }) { return <div className="infoBox"><h3>{title}</h3>{lines.map((l,i)=><p key={i}>{l}</p>)}</div>; }
-function Num({ label, value, onChange }) { return <div><label>{label}</label><input type="number" value={value} onChange={e=>onChange(Number(e.target.value))}/></div>; }
-function Read({ label, value }) { return <div><label>{label}</label><input readOnly value={value}/></div>; }
-function money(v) { return "$" + Number(v || 0).toFixed(2); }

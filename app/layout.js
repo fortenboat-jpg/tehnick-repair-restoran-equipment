@@ -1,8 +1,8 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Restaurant Repair CRM",
-  description: "Bilingual CRM for restaurant equipment repair"
+  title: "Forten CRM Estimate",
+  description: "Smart PDF estimate system for commercial kitchen equipment service"
 };
 
 export default function RootLayout({ children }) {
