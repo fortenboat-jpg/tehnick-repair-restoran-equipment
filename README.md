@@ -1,18 +1,19 @@
-# Restaurant Repair CRM — Full RU/EN
+# Forten CRM + Smart PDF Estimate RU/EN
 
-Полностью двуязычная версия CRM для ремонта ресторанного оборудования.
-
-## Что исправлено
-- Все вкладки и блоки имеют русский и английский язык.
-- Все статусы переведены.
-- Все категории техники переведены.
-- Все виды работ переведены.
-- Estimate документ генерируется на выбранном языке.
-- Email рассылки генерируются на выбранном языке.
-- Графики и фильтры переключаются RU/EN.
-- Прайсбук отображается RU/EN.
+Основной модуль для Vercel:
+- бренд Forten Commercial Equipment Services
+- RU/EN интерфейс
+- CRM карточка клиента
+- диагностика
+- оборудование
+- Smart Estimate
+- breakdown цены
+- PDF генератор
+- гарантия
+- terms
+- Work Order / Invoice заготовка
 
 ## Vercel
-Framework: Next.js  
-Root Directory: ./  
+Framework: Next.js
+Root Directory: ./
 Output Directory: Next.js default
