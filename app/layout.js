@@ -1,13 +1,13 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Forten CRM Estimate",
-  description: "Smart PDF estimate system for commercial kitchen equipment service"
+  title: "Forten Commercial Equipment Services",
+  description: "Commercial Kitchen Equipment Repair & Maintenance platform with website, CRM, estimates, work orders, invoices, and equipment history."
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="ru">
+    <html lang="en">
       <body>{children}</body>
     </html>
   );
