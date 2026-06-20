@@ -41,6 +41,15 @@ input, select, textarea {
   box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
 }
 textarea { min-height: 112px; resize: vertical; }
+.readBox {
+  min-height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 13px;
+  background: rgba(255, 255, 255, .62);
+  color: var(--text);
+  line-height: 1.45;
+}
 
 .siteShell { max-width: 1260px; margin: 0 auto; padding: 22px; }
 .siteNav, .collectorHeader {
@@ -181,6 +190,21 @@ textarea { min-height: 112px; resize: vertical; }
   text-align: center;
   font-weight: 1000;
 }
+.trustStack {
+  display: grid;
+  gap: 10px;
+}
+.trustStack span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 16px;
+  background: rgba(255,255,255,.12);
+  padding: 12px;
+  color: #f8fbff;
+  font-weight: 900;
+}
 
 .section, .leadSection, .panel {
   margin-top: 26px;
@@ -204,6 +228,8 @@ h1, h2, h3 { color: var(--navy); letter-spacing: 0; }
 }
 .serviceCard svg { color: var(--orange); }
 .serviceCard p, .leadSection p, .crmHeader p, .panel p { color: var(--muted); line-height: 1.55; }
+.compactGrid { grid-template-columns: repeat(4, 1fr); }
+.compactGrid .serviceCard { min-height: 112px; }
 .split { display: grid; grid-template-columns: .65fr 1.35fr; gap: 20px; align-items: center; }
 .customerChips { display: flex; flex-wrap: wrap; gap: 10px; }
 .customerChips span {
@@ -399,11 +425,42 @@ h1, h2, h3 { color: var(--navy); letter-spacing: 0; }
   max-width: 1180px;
   margin: 0 auto;
 }
+.loginShell, .adminGate {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    linear-gradient(135deg, rgba(9, 26, 53, .96), rgba(16, 43, 85, .86)),
+    url("https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1800&q=82");
+  background-size: cover;
+  background-position: center;
+}
+.loginCard {
+  width: min(460px, 100%);
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 30px;
+  background: rgba(255,255,255,.90);
+  padding: 28px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+.loginTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.loginCard h1 { margin: 14px 0 8px; font-size: 38px; }
+.loginCard p { color: var(--muted); line-height: 1.5; }
+.loginCard .primary { margin-top: 14px; width: 100%; justify-content: center; }
+.loginError { color: #b42318 !important; font-weight: 900; }
 
 @media (max-width: 1100px) {
   .heroBand { grid-template-columns: 1fr; }
   .heroBand h1 { font-size: 56px; }
-  .serviceGrid, .kpiGrid, .dashboardGrid { grid-template-columns: 1fr 1fr; }
+  .serviceGrid, .compactGrid, .kpiGrid, .dashboardGrid { grid-template-columns: 1fr 1fr; }
   .leadForm, .fieldGrid, .totals { grid-template-columns: 1fr 1fr; }
   .moduleGrid { grid-template-columns: 1fr; }
   .leadCard, .historyRow, .record { grid-template-columns: 1fr; }
@@ -421,7 +478,7 @@ h1, h2, h3 { color: var(--navy); letter-spacing: 0; }
   .heroBand { min-height: 0; padding: 24px; border-radius: 24px; }
   .heroBand h1 { font-size: 42px; }
   .section h2, .leadSection h2, .panel h2, .crmHeader h1 { font-size: 30px; }
-  .serviceGrid, .leadForm, .fieldGrid, .kpiGrid, .dashboardGrid, .totals, .priceRow, .barChart { grid-template-columns: 1fr; }
+  .serviceGrid, .compactGrid, .leadForm, .fieldGrid, .kpiGrid, .dashboardGrid, .totals, .priceRow, .barChart { grid-template-columns: 1fr; }
   .barChart { height: auto; align-items: stretch; }
   .barChart span { height: 42px !important; }
   .barChart b { position: static; transform: none; display: block; width: auto; padding: 12px; color: var(--white); }
