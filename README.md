@@ -22,7 +22,15 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Open the local URL shown by Next.js.
+
+Development port policy:
+
+- Use `6400` as the primary Forten CRM development port.
+- If `6400` is busy, use `6401`, `6402`, `6403`, `6404`, or `6405`.
+- Use only ports in the `6400-6900` range for Forten development, previews, local verification, and temporary servers.
+- Never use ports `3000-5000`; they are reserved for other internal services.
+- Never use `3003`; it is reserved for a separate document translation service.
 
 ## Production Build
 
