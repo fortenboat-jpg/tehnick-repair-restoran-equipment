@@ -1,4 +1,4 @@
-import LeadCollectorClient from "./LeadCollectorClient";
+import AdminApp from "../AdminApp";
 
 export const metadata = {
   title: "Forten Lead Collector",
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function AdminLeadCollectorPage() {
-  return <LeadCollectorClient />;
+  return <AdminApp initialTab="Lead Collector" />;
 }

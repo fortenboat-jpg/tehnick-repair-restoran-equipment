@@ -7,17 +7,20 @@ export const metadata = {
 };
 
 const tabBySection = {
-  leads: "Leads",
-  dispatch: "Dispatch",
   tickets: "Tickets",
+  dispatch: "Dispatch",
+  technician: "Technician",
   mentor: "Mentor",
-  customers: "Customers",
   quotes: "Quotes",
   estimates: "Quotes",
-  "work-orders": "Work Orders",
   invoices: "Invoices",
-  marketing: "Marketing",
-  equipment: "Customers",
+  customers: "Customers",
+  equipment: "Equipment",
+  inventory: "Inventory",
+  reports: "Reports",
+  kpi: "KPI",
+  ai: "AI",
+  "lead-collector": "Lead Collector",
   settings: "Settings"
 };
 
