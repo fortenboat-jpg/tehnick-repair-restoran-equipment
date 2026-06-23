@@ -24,12 +24,16 @@ import {
 import { businessTypes, equipmentTypes } from "./data";
 
 const serviceVisuals = [
-  { Icon: Snowflake, en: "Walk-in cooler / freezer", ru: "Walk-in cooler / freezer" },
-  { Icon: Flame, en: "Fryer / oven / griddle", ru: "Фритюр / печь / griddle" },
-  { Icon: Utensils, en: "Mixer / slicer / prep table", ru: "Миксер / слайсер / prep table" },
-  { Icon: WashingMachine, en: "Commercial dishwasher", ru: "Посудомоечная машина" },
-  { Icon: Coffee, en: "Ice / beverage / espresso", ru: "Лед / напитки / эспрессо" },
-  { Icon: Wrench, en: "Technician diagnostics", ru: "Диагностика техника" }
+  { Icon: Snowflake, image: "https://source.unsplash.com/1200x850/?walk-in-cooler,commercial-refrigeration", en: "Walk-in Cooler / Walk-in Freezer", ru: "Walk-in cooler / walk-in freezer" },
+  { Icon: Flame, image: "https://source.unsplash.com/1200x850/?commercial-fryer,deep-fryer", en: "Commercial Fryer", ru: "Коммерческая фритюрница" },
+  { Icon: Flame, image: "https://source.unsplash.com/1200x850/?commercial-oven,convection-oven", en: "Commercial Oven / Convection Oven", ru: "Коммерческая печь / convection oven" },
+  { Icon: Flame, image: "https://source.unsplash.com/1200x850/?flat-top-grill,griddle", en: "Flat Top Grill / Griddle", ru: "Flat top grill / griddle" },
+  { Icon: Snowflake, image: "https://source.unsplash.com/1200x850/?ice-machine,commercial-ice-maker", en: "Ice Machine", ru: "Льдогенератор" },
+  { Icon: WashingMachine, image: "https://source.unsplash.com/1200x850/?commercial-dishwasher,warewashing", en: "Commercial Dishwasher", ru: "Коммерческая посудомоечная машина" },
+  { Icon: Utensils, image: "https://source.unsplash.com/1200x850/?commercial-mixer,meat-slicer", en: "Commercial Mixer / Meat Slicer", ru: "Миксер / слайсер" },
+  { Icon: Coffee, image: "https://source.unsplash.com/1200x850/?beverage-cooler,espresso-machine", en: "Beverage Cooler / Espresso Machine", ru: "Beverage cooler / espresso machine" },
+  { Icon: Wrench, image: "https://source.unsplash.com/1200x850/?refrigeration-compressor,control-board", en: "Compressor / Refrigeration Rack", ru: "Компрессор / refrigeration rack" },
+  { Icon: Wrench, image: "https://source.unsplash.com/1200x850/?technician-repairing-equipment", en: "Technician Diagnostics", ru: "Диагностика техника" }
 ];
 
 const copy = {
@@ -69,12 +73,16 @@ const copy = {
     submit: "Send request",
     urgencyOptions: ["Emergency", "Same day", "This week", "Preventive maintenance"],
     serviceCards: [
-      ["Refrigeration repair", "Walk-in coolers, freezers, reach-ins, prep tables, ice machines.", "Protect food safety and get temperatures back under control."],
-      ["Cooking equipment", "Fryers, ovens, ranges, griddles, grills, hot holding.", "Keep the line running with clear diagnostics and repair plans."],
-      ["Food preparation", "Mixers, slicers, processors, prep-line equipment.", "Restore prep speed and reduce downtime before service."],
-      ["Warewashing", "Dishwashers, glasswashers, boosters, pumps, wash systems.", "Fix sanitation-critical equipment with practical repair options."],
-      ["Beverage equipment", "Coffee, beverage, ice, and bar support equipment.", "Support bars, cafes, hotels, and high-volume service counters."],
-      ["Preventive maintenance", "Cleaning, inspection, calibration, and recurring service plans.", "Catch failures early and extend equipment life."]
+      ["Walk-in cooler / freezer repair", "Walk-in coolers, walk-in freezers, reach-in coolers, prep tables, and temperature controls.", "Restore safe holding temperatures and protect inventory."],
+      ["Commercial fryer repair", "Gas and electric fryers, baskets, ignition, thermostats, burners, and safety controls.", "Keep the cook line running with flat-rate repair recommendations."],
+      ["Commercial oven repair", "Commercial ovens, convection ovens, ranges, sensors, controls, fans, and ignition systems.", "Stabilize heat, airflow, and bake performance."],
+      ["Flat top grill / griddle repair", "Flat tops, griddles, grills, pilots, burners, thermostats, and gas controls.", "Recover even surface temperature before service gets backed up."],
+      ["Ice machine repair", "Commercial ice machines, harvest cycles, water valves, sensors, pumps, and sanitation issues.", "Restore ice production and document water/ice system findings."],
+      ["Commercial dishwasher repair", "Door-type, undercounter, and conveyor dishwashers, boosters, pumps, wash/rinse systems.", "Fix sanitation-critical warewashing equipment quickly."],
+      ["Food prep equipment repair", "Commercial mixers, meat slicers, processors, prep tables, belts, switches, and guards.", "Reduce prep downtime and keep production moving."],
+      ["Beverage equipment repair", "Beverage coolers, coffee and espresso machines, bar refrigeration, pumps, and controls.", "Support cafes, bars, hotels, and service counters."],
+      ["Compressor and controls diagnostics", "Compressors, fan motors, refrigeration racks, relays, capacitors, boards, and wiring.", "Find the root cause before parts are ordered."],
+      ["Technician diagnostic service", "On-site readings, photos, videos, mentor review, quote preparation, and service history.", "Clear diagnostics from $159 with a professional repair plan."]
     ],
     process: ["Request", "Technician Visit", "Mentor Diagnosis", "Quote", "Payment", "Repair"],
     inspections: [
@@ -131,12 +139,16 @@ const copy = {
     submit: "Отправить заявку",
     urgencyOptions: ["Срочно", "Сегодня", "На этой неделе", "Плановое обслуживание"],
     serviceCards: [
-      ["Холодильное оборудование", "Walk-in cooler, морозильники, шкафы, prep table, льдогенераторы.", "Вернуть температуру в норму и защитить продукты."],
-      ["Тепловое оборудование", "Фритюрницы, печи, плиты, griddle, грили, тепловые шкафы.", "Стабилизировать линию с понятной диагностикой и планом ремонта."],
-      ["Подготовка продуктов", "Миксеры, слайсеры, процессоры и prep-линии.", "Сократить простой и восстановить скорость подготовки."],
-      ["Моечное оборудование", "Посудомоечные машины, стаканомойки, бойстеры, насосы.", "Ремонт критичного санитарного оборудования."],
-      ["Оборудование для напитков", "Кофе, напитки, лед и оборудование бара.", "Поддержка баров, кафе, отелей и сервисных стоек."],
-      ["Профилактика", "Очистка, проверка, калибровка и регулярные сервисные планы.", "Раннее выявление проблем и продление срока службы."]
+      ["Ремонт walk-in cooler / freezer", "Walk-in cooler, walk-in freezer, reach-in cooler, prep table и температурные контроллеры.", "Вернуть безопасную температуру и защитить продукты."],
+      ["Ремонт коммерческих фритюрниц", "Газовые и электрические фритюрницы, розжиг, термостаты, горелки и системы безопасности.", "Вернуть линию в работу с понятным планом ремонта."],
+      ["Ремонт коммерческих печей", "Коммерческие печи, convection oven, датчики, управление, вентиляторы и розжиг.", "Стабилизировать нагрев, воздушный поток и качество выпечки."],
+      ["Ремонт flat top grill / griddle", "Flat top, griddle, грили, пилоты, горелки, термостаты и газовые клапаны.", "Восстановить ровную температуру поверхности перед сервисом."],
+      ["Ремонт льдогенераторов", "Коммерческие ice machine, цикл сброса льда, клапаны воды, датчики, насосы и санитария.", "Восстановить производство льда и зафиксировать диагностику."],
+      ["Ремонт посудомоечных машин", "Door-type, undercounter и conveyor dishwasher, бойлеры, насосы, мойка и ополаскивание.", "Быстрый ремонт критичного санитарного оборудования."],
+      ["Ремонт оборудования подготовки", "Миксеры, мясорубки/слайсеры, процессоры, prep table, ремни, выключатели и защита.", "Сократить простой подготовки и производства."],
+      ["Ремонт beverage оборудования", "Beverage cooler, кофемашины, espresso machine, барное охлаждение, насосы и управление.", "Поддержка кафе, баров, отелей и сервисных стоек."],
+      ["Диагностика компрессоров и управления", "Компрессоры, fan motor, refrigeration rack, реле, конденсаторы, платы и проводка.", "Найти причину неисправности до заказа запчастей."],
+      ["Диагностика техника на объекте", "Показания, фото, видео, проверка ментора, смета и история обслуживания.", "Диагностика от $159 с профессиональным планом ремонта."]
     ],
     process: ["Заявка", "Визит техника", "Диагностика ментора", "Смета", "Оплата", "Ремонт"],
     inspections: [
@@ -194,6 +206,12 @@ const businessLabels = {
 };
 
 const equipmentIcons = [Snowflake, Flame, Utensils, WashingMachine, Coffee, Wrench];
+const fallbackServiceVisual = {
+  Icon: Wrench,
+  image: "https://source.unsplash.com/1200x850/?commercial-kitchen-equipment-repair",
+  en: "Commercial Equipment Service",
+  ru: "Сервис оборудования"
+};
 
 export default function HomePage() {
   const [lang, setLang] = useState("en");
@@ -223,6 +241,9 @@ export default function HomePage() {
     setLang(nextLang);
     setForm((current) => ({ ...current, urgency: copy[nextLang].urgencyOptions[1] }));
   }
+
+  const serviceCards = Array.isArray(t.serviceCards) ? t.serviceCards : [];
+  const currentEquipmentLabels = equipmentLabels[lang] || equipmentLabels.en || {};
 
   async function submitLead(event) {
     event.preventDefault();
@@ -303,14 +324,17 @@ export default function HomePage() {
           <p>{t.servicesIntro}</p>
         </div>
         <div className="serviceImageGrid">
-          {t.serviceCards.map(([title, text, detail], index) => (
+          {serviceCards.map((card, index) => {
+            const [title = "", text = "", detail = ""] = Array.isArray(card) ? card : [];
+            const visual = serviceVisuals[index] || fallbackServiceVisual;
+            const Icon = visual.Icon || Wrench;
+            const visualLabel = visual[lang] || visual.en || title || fallbackServiceVisual.en;
+            const image = visual.image || fallbackServiceVisual.image;
+            return (
             <article className="imageServiceCard" key={title}>
-              <div className={`cardMedia equipmentMedia media-${index}`}>
-                {(() => {
-                  const Icon = serviceVisuals[index]?.Icon || Wrench;
-                  return <Icon size={38} />;
-                })()}
-                <span>{serviceVisuals[index]?.[lang]}</span>
+              <div className={`cardMedia equipmentMedia media-${index}`} style={{ backgroundImage: `linear-gradient(180deg, rgba(9,26,53,.08), rgba(9,26,53,.64)), url("${image}")` }}>
+                <Icon size={38} />
+                <span>{visualLabel}</span>
               </div>
               <div>
                 <h3>{title}</h3>
@@ -318,7 +342,8 @@ export default function HomePage() {
                 <span>{detail}</span>
               </div>
             </article>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -330,7 +355,7 @@ export default function HomePage() {
         <div className="equipmentGrid">
           {equipmentTypes.map((item, index) => {
             const Icon = equipmentIcons[index] || Wrench;
-            return <article className="equipmentTile" key={item}><Icon size={28} /><span>{equipmentLabels[lang][item]}</span></article>;
+            return <article className="equipmentTile" key={item}><Icon size={28} /><span>{currentEquipmentLabels[item] || item}</span></article>;
           })}
         </div>
       </section>
