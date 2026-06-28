@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Languages, LockKeyhole } from "lucide-react";
 
 const copy = {
@@ -28,23 +28,29 @@ export default function LoginClient() {
   const [lang, setLang] = useState("en");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const t = copy[lang];
+  const safeLang = copy[lang] ? lang : "en";
+  const t = useMemo(() => copy[safeLang], [safeLang]);
 
   async function submit(event) {
     event.preventDefault();
     setError("");
-    const response = await fetch("/api/admin-login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password })
-    });
-    const result = await response.json();
-    if (!result.ok) {
+
+    try {
+      const response = await fetch("/api/admin-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password })
+      });
+      const result = await response.json().catch(() => ({ ok: false }));
+      if (!response.ok || !result.ok) {
+        setError(t.error);
+        return;
+      }
+      saveSession();
+      window.location.assign("/admin");
+    } catch {
       setError(t.error);
-      return;
     }
-    localStorage.setItem("fortenAdminSession", "active");
-    window.location.href = "/admin";
   }
 
   return (
@@ -52,7 +58,7 @@ export default function LoginClient() {
       <form className="loginCard" onSubmit={submit}>
         <div className="loginTop">
           <span className="mark">F</span>
-          <button type="button" className="secondary" onClick={() => setLang(lang === "en" ? "ru" : "en")}><Languages size={17} />{t.lang}</button>
+          <button type="button" className="secondary" onClick={() => setLang(safeLang === "en" ? "ru" : "en")}><Languages size={17} />{t.lang}</button>
         </div>
         <LockKeyhole size={34} />
         <h1>{t.title}</h1>
@@ -65,4 +71,13 @@ export default function LoginClient() {
       </form>
     </main>
   );
+}
+
+function saveSession() {
+  try {
+    localStorage.setItem("fortenAdminSession", "active");
+  } catch {}
+  try {
+    document.cookie = "fortenAdminSession=active; max-age=28800; path=/; SameSite=Lax";
+  } catch {}
 }

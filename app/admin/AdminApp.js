@@ -321,9 +321,38 @@ const statusRu = {
 const paymentRu = { Card: "Карта", ACH: "ACH", Zelle: "Zelle", Check: "Чек", Cash: "Наличные" };
 const invoiceRu = { Unpaid: "Не оплачен", Paid: "Оплачен", Partial: "Частично" };
 
+const fallbackTicket = sampleTickets[0] || {
+  id: "fallback-ticket",
+  ticketNumber: "FS-2026-000000",
+  status: "NEW LEAD",
+  customer: "",
+  businessName: "",
+  address: "",
+  equipment: "",
+  equipmentId: "",
+  manufacturer: "",
+  model: "",
+  serial: "",
+  problem: "",
+  technician: "",
+  mentor: "",
+  diagnosticNotes: "",
+  temperatureReadings: "",
+  pressureReadings: "",
+  voltageReadings: "",
+  photos: "",
+  videos: "",
+  mentorDiagnosis: "",
+  quoteTotal: 0,
+  invoiceStatus: "",
+  attachments: { photos: [], videos: [], documents: [] },
+  timeline: []
+};
+
 export default function AdminApp({ initialTab = "Dashboard" }) {
   const [lang, setLang] = useState("en");
   const [tab, setTab] = useState(initialTab);
+  const [mounted, setMounted] = useState(false);
   const [authorized, setAuthorized] = useState(null);
   const [tickets, setTickets] = useState(sampleTickets);
   const [customers] = useState(sampleCustomers);
@@ -332,31 +361,47 @@ export default function AdminApp({ initialTab = "Dashboard" }) {
   const [quotes, setQuotes] = useState(sampleQuotes);
   const [invoices, setInvoices] = useState(sampleInvoices);
   const [reports] = useState(sampleReports);
-  const [selectedTicketId, setSelectedTicketId] = useState(sampleTickets[0].id);
-  const t = text[lang];
+  const [selectedTicketId, setSelectedTicketId] = useState(fallbackTicket.id);
+  const safeLang = text[lang] ? lang : "en";
+  const t = text[safeLang];
 
   useEffect(() => {
-    if (localStorage.getItem("fortenAdminSession") === "active") setAuthorized(true);
-    else {
+    setMounted(true);
+    let hasSession = false;
+    try {
+      hasSession = localStorage.getItem("fortenAdminSession") === "active";
+    } catch {
+      hasSession = false;
+    }
+    if (!hasSession) {
+      try {
+        hasSession = document.cookie.split(";").some((cookie) => cookie.trim() === "fortenAdminSession=active");
+      } catch {
+        hasSession = false;
+      }
+    }
+    if (hasSession) {
+      setAuthorized(true);
+    } else {
       setAuthorized(false);
-      window.location.href = "/admin/login";
+      window.location.assign("/admin/login");
     }
   }, []);
 
   useEffect(() => {
-    if (!authorized) return;
+    if (!mounted || !authorized) return;
     const storedTickets = readStore("fortenV2Tickets", sampleTickets);
     const websiteTickets = ticketsFromLeads(readStore("fortenLeads", []));
     setTickets(mergeBy([...websiteTickets, ...storedTickets], "ticketNumber"));
     setQuotes(readStore("fortenV2Quotes", sampleQuotes));
     setInvoices(readStore("fortenV2Invoices", sampleInvoices));
-  }, [authorized]);
+  }, [mounted, authorized]);
 
-  useEffect(() => { if (authorized) localStorage.setItem("fortenV2Tickets", JSON.stringify(tickets)); }, [authorized, tickets]);
-  useEffect(() => { if (authorized) localStorage.setItem("fortenV2Quotes", JSON.stringify(quotes)); }, [authorized, quotes]);
-  useEffect(() => { if (authorized) localStorage.setItem("fortenV2Invoices", JSON.stringify(invoices)); }, [authorized, invoices]);
+  useEffect(() => { if (mounted && authorized) writeStore("fortenV2Tickets", tickets); }, [mounted, authorized, tickets]);
+  useEffect(() => { if (mounted && authorized) writeStore("fortenV2Quotes", quotes); }, [mounted, authorized, quotes]);
+  useEffect(() => { if (mounted && authorized) writeStore("fortenV2Invoices", invoices); }, [mounted, authorized, invoices]);
 
-  const selectedTicket = tickets.find((ticket) => ticket.id === selectedTicketId) || tickets[0];
+  const selectedTicket = tickets.find((ticket) => ticket.id === selectedTicketId) || tickets[0] || fallbackTicket;
   const dashboardKpis = useMemo(() => [
     tickets.filter((ticket) => !["CLOSED", "CANCELLED"].includes(ticket.status)).length,
     tickets.filter((ticket) => ["DIAGNOSTIC", "MENTOR REVIEW"].includes(ticket.status)).length,
@@ -421,7 +466,7 @@ export default function AdminApp({ initialTab = "Dashboard" }) {
     await createServicePdf("invoice", { invoice, ticket, equipment: eq, t }, preview);
   }
 
-  if (!authorized) {
+  if (!mounted || !authorized) {
     return <main className="adminGate"><section className="panel"><span className="mark">F</span><h1>Forten Admin</h1><p>{t.checking}</p></section></main>;
   }
 
@@ -431,31 +476,31 @@ export default function AdminApp({ initialTab = "Dashboard" }) {
         <a className="brand crmBrand" href="/"><span className="mark">F</span><span><strong>FORTEN</strong><small>{t.subtitle}</small></span></a>
         {navKeys.map((key) => (
           <button className={tab === key ? "active" : ""} key={key} onClick={() => go(key)}>
-            {iconFor(key)}{t.nav[key]}
+            {iconFor(key)}{t.nav[key] || key}
           </button>
         ))}
-        <button onClick={() => setLang(lang === "en" ? "ru" : "en")}><Languages size={17} />{t.lang}</button>
+        <button onClick={() => setLang(safeLang === "en" ? "ru" : "en")}><Languages size={17} />{t.lang}</button>
       </aside>
       <section className="crmMain">
         <header className="crmHeader">
           <div><h1>{t.title}</h1><p>{t.subtitle}</p></div>
           <a className="secondary" href="/">{t.website}</a>
         </header>
-        {tab === "Dashboard" && <Dashboard t={t} lang={lang} kpis={dashboardKpis} tickets={tickets} quotes={quotes} invoices={invoices} go={go} />}
-        {tab === "Tickets" && <TicketsPanel t={t} lang={lang} tickets={tickets} equipment={equipment} selectedTicket={selectedTicket} setSelectedTicketId={setSelectedTicketId} patchTicket={patchTicket} updateStatus={updateStatus} generateQuote={generateQuote} />}
-        {tab === "Dispatch" && <DispatchPanel t={t} lang={lang} tickets={tickets} patchTicket={patchTicket} openTicket={(ticket) => { setSelectedTicketId(ticket.id); go("Tickets"); }} />}
-        {tab === "Technician" && <TechnicianPanel t={t} lang={lang} ticket={selectedTicket} updateStatus={updateStatus} generateQuote={generateQuote} />}
-        {tab === "Mentor" && <MentorPanel t={t} lang={lang} tickets={tickets} customers={customers} equipment={equipment} patchTicket={patchTicket} generateQuote={generateQuote} />}
-        {tab === "Quotes" && <QuotesPanel t={t} lang={lang} quotes={quotes} approveQuote={approveQuote} generateInvoice={generateInvoice} generateQuotePdf={generateQuotePdf} />}
-        {tab === "Invoices" && <InvoicesPanel t={t} lang={lang} invoices={invoices} setInvoices={setInvoices} markPaid={markPaid} generateInvoicePdf={generateInvoicePdf} />}
+        {tab === "Dashboard" && <Dashboard t={t} lang={safeLang} kpis={dashboardKpis} tickets={tickets} quotes={quotes} invoices={invoices} go={go} />}
+        {tab === "Tickets" && <TicketsPanel t={t} lang={safeLang} tickets={tickets} equipment={equipment} selectedTicket={selectedTicket} setSelectedTicketId={setSelectedTicketId} patchTicket={patchTicket} updateStatus={updateStatus} generateQuote={generateQuote} />}
+        {tab === "Dispatch" && <DispatchPanel t={t} lang={safeLang} tickets={tickets} patchTicket={patchTicket} openTicket={(ticket) => { setSelectedTicketId(ticket.id); go("Tickets"); }} />}
+        {tab === "Technician" && <TechnicianPanel t={t} lang={safeLang} ticket={selectedTicket} updateStatus={updateStatus} generateQuote={generateQuote} />}
+        {tab === "Mentor" && <MentorPanel t={t} lang={safeLang} tickets={tickets} customers={customers} equipment={equipment} patchTicket={patchTicket} generateQuote={generateQuote} />}
+        {tab === "Quotes" && <QuotesPanel t={t} lang={safeLang} quotes={quotes} approveQuote={approveQuote} generateInvoice={generateInvoice} generateQuotePdf={generateQuotePdf} />}
+        {tab === "Invoices" && <InvoicesPanel t={t} lang={safeLang} invoices={invoices} setInvoices={setInvoices} markPaid={markPaid} generateInvoicePdf={generateInvoicePdf} />}
         {tab === "Customers" && <CustomersPanel t={t} customers={customers} equipment={equipment} invoices={invoices} tickets={tickets} />}
         {tab === "Equipment" && <EquipmentPanel t={t} equipment={equipment} tickets={tickets} />}
         {tab === "Inventory" && <InventoryPanel t={t} inventory={inventory} />}
         {tab === "Reports" && <ReportsPanel t={t} reports={reports} />}
-        {tab === "KPI" && <KpiPanel t={t} lang={lang} kpi={sampleKpi} />}
+        {tab === "KPI" && <KpiPanel t={t} lang={safeLang} kpi={sampleKpi} />}
         {tab === "AI" && <AiPanel t={t} />}
         {tab === "Lead Collector" && <LeadCollectorPanel t={t} />}
-        {tab === "Settings" && <SettingsPanel t={t} lang={lang} />}
+        {tab === "Settings" && <SettingsPanel t={t} lang={safeLang} />}
       </section>
     </main>
   );
@@ -596,7 +641,7 @@ function MentorPanel({ t, lang, tickets, customers, equipment, patchTicket, gene
 }
 
 function QuotesPanel({ t, lang, quotes, approveQuote, generateInvoice, generateQuotePdf }) {
-  return <section className="panel"><h2>{t.modules.quotes}</h2><div className="recordList">{quotes.map((quote) => <article className="customerCard" key={quote.quoteNumber}><div className="panelHeader"><h3>{quote.quoteNumber}</h3><span className="statusPill">{labelStatus(quote.status, lang)}</span></div><div className="priceTable">{t.quoteSections.map((label, index) => <div key={label}><span>{label}</span><strong>${[quote.labor, quote.parts, quote.refrigerant, quote.tripCharge, quote.tax, quote.total][index]}</strong></div>)}</div><div className="detailGrid"><Read label={t.labels.customer} value={quote.customer} /><Read label={t.labels.equipment} value={quote.equipment} /><Read label={t.labels.diagnostic} value={quote.diagnosis} /><Read label={t.labels.recommendedRepair} value={quote.repairPlan} /><Read label={t.labels.scope} value={quote.scope} /><Read label={t.labels.materials} value={quote.materials} /><Read label={t.labels.warranty} value={quote.warranty} /><Read label={t.labels.terms} value={quote.terms} /></div><div className="signatureBox">{t.labels.signature}</div><div className="buttonRow"><button className="secondary" onClick={() => approveQuote(quote, "APPROVED")}>{t.actions.approve}</button><button className="secondary" onClick={() => approveQuote(quote, "REJECTED")}>{t.actions.reject}</button><button className="secondary" onClick={() => approveQuote(quote, "REVISION REQUESTED")}>{t.actions.revision}</button><button className="secondary" onClick={() => generateQuotePdf(quote, true)}>{t.actions.previewPdf}</button><button className="secondary" onClick={() => generateQuotePdf(quote)}>{t.actions.pdf}</button><button className="primary" onClick={() => generateInvoice(quote)}>{text[lang].nav.Invoices}</button></div></article>)}</div></section>;
+  return <section className="panel"><h2>{t.modules.quotes}</h2><div className="recordList">{quotes.map((quote) => <article className="customerCard" key={quote.quoteNumber}><div className="panelHeader"><h3>{quote.quoteNumber}</h3><span className="statusPill">{labelStatus(quote.status, lang)}</span></div><div className="priceTable">{t.quoteSections.map((label, index) => <div key={label}><span>{label}</span><strong>${[quote.labor, quote.parts, quote.refrigerant, quote.tripCharge, quote.tax, quote.total][index]}</strong></div>)}</div><div className="detailGrid"><Read label={t.labels.customer} value={quote.customer} /><Read label={t.labels.equipment} value={quote.equipment} /><Read label={t.labels.diagnostic} value={quote.diagnosis} /><Read label={t.labels.recommendedRepair} value={quote.repairPlan} /><Read label={t.labels.scope} value={quote.scope} /><Read label={t.labels.materials} value={quote.materials} /><Read label={t.labels.warranty} value={quote.warranty} /><Read label={t.labels.terms} value={quote.terms} /></div><div className="signatureBox">{t.labels.signature}</div><div className="buttonRow"><button className="secondary" onClick={() => approveQuote(quote, "APPROVED")}>{t.actions.approve}</button><button className="secondary" onClick={() => approveQuote(quote, "REJECTED")}>{t.actions.reject}</button><button className="secondary" onClick={() => approveQuote(quote, "REVISION REQUESTED")}>{t.actions.revision}</button><button className="secondary" onClick={() => generateQuotePdf(quote, true)}>{t.actions.previewPdf}</button><button className="secondary" onClick={() => generateQuotePdf(quote)}>{t.actions.pdf}</button><button className="primary" onClick={() => generateInvoice(quote)}>{t.nav.Invoices}</button></div></article>)}</div></section>;
 }
 
 function InvoicesPanel({ t, lang, invoices, setInvoices, markPaid, generateInvoicePdf }) {
@@ -741,12 +786,21 @@ function readStore(key, fallback) {
   }
 }
 
+function writeStore(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    return false;
+  }
+  return true;
+}
+
 function upsert(list, record, key) {
   return list.some((item) => item[key] === record[key]) ? list.map((item) => item[key] === record[key] ? record : item) : [record, ...list];
 }
 
 function mergeBy(list, key) {
-  return [...new Map(list.map((item) => [item[key], item])).values()];
+  return [...new globalThis.Map(list.map((item) => [item[key], item])).values()];
 }
 
 function ticketsFromLeads(leads) {
