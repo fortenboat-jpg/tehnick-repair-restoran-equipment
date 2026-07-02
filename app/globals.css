@@ -744,18 +744,25 @@ h1, h2, h3 { color: var(--navy); letter-spacing: 0; }
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 80% 18%, rgba(245,124,32,.42), transparent 24%),
-    linear-gradient(180deg, transparent 62%, rgba(4, 14, 31, .74));
+    radial-gradient(circle at 80% 18%, rgba(245,124,32,.30), transparent 24%),
+    linear-gradient(110deg, rgba(3, 10, 24, .96) 0%, rgba(5, 17, 37, .90) 42%, rgba(9, 26, 53, .68) 68%, rgba(9, 26, 53, .48) 100%),
+    linear-gradient(180deg, rgba(2, 8, 18, .58) 0%, rgba(2, 8, 18, .22) 42%, rgba(2, 8, 18, .86) 100%);
   pointer-events: none;
   z-index: 1;
 }
 .heroContent,
 .heroServiceGlass {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 .heroContent {
   max-width: 980px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 30px;
+  background: linear-gradient(145deg, rgba(3, 10, 24, .72), rgba(9, 26, 53, .48));
+  padding: clamp(22px, 3vw, 38px);
+  box-shadow: 0 24px 70px rgba(0,0,0,.30);
+  backdrop-filter: blur(10px);
 }
 .premiumHero h1 {
   margin: 0 0 22px;
@@ -763,12 +770,14 @@ h1, h2, h3 { color: var(--navy); letter-spacing: 0; }
   font-size: clamp(54px, 7vw, 104px);
   line-height: .92;
   max-width: 1060px;
+  text-shadow: 0 4px 24px rgba(0,0,0,.74), 0 1px 2px rgba(0,0,0,.88);
 }
 .premiumHero p {
   max-width: 820px;
   color: #eaf1fb;
   font-size: 19px;
   line-height: 1.62;
+  text-shadow: 0 2px 12px rgba(0,0,0,.72);
 }
 .heroSubGrid {
   display: flex;
@@ -783,11 +792,12 @@ h1, h2, h3 { color: var(--navy); letter-spacing: 0; }
   gap: 8px;
   border: 1px solid rgba(255,255,255,.22);
   border-radius: 999px;
-  background: rgba(255,255,255,.12);
+  background: rgba(3, 10, 24, .38);
   color: #f8fbff;
   padding: 10px 13px;
   font-weight: 1000;
   backdrop-filter: blur(14px);
+  text-shadow: 0 1px 8px rgba(0,0,0,.70);
 }
 .heroServiceGlass {
   align-self: stretch;

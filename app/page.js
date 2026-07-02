@@ -56,7 +56,7 @@ const copy = {
       "Preventive Maintenance"
     ],
     heroBody: "Premium equipment repair for restaurants, cafes, bakeries, bars, hotels, grocery stores, food trucks, and commercial kitchens across Tampa Bay and Central Florida.",
-    trustStats: ["Diagnostics from $159", "Fast estimate after diagnostic", "Commercial equipment specialists"],
+    trustStats: ["Fast On-Site Diagnostics", "Fast estimate after diagnostic", "Commercial equipment specialists"],
     servicesEyebrow: "Equipment repair categories",
     servicesTitle: "We repair the machines that keep service running.",
     servicesBody: "Every service category is focused on commercial restaurant equipment, from refrigeration failures to cooking line breakdowns and preventive maintenance.",
@@ -146,7 +146,7 @@ const copy = {
     whyTitle: "Built for commercial kitchens, not household repair.",
     why: [
       "Commercial restaurant equipment focus",
-      "Diagnostics from $159",
+      "Fast On-Site Diagnostics",
       "Flat-rate quote after inspection",
       "Photos, readings, and documented findings",
       "Warranty and terms listed clearly",
@@ -165,7 +165,7 @@ const copy = {
     faqTitle: "Common Questions",
     faq: [
       ["What equipment do you repair?", "Commercial refrigeration, cooking equipment, grills, ice machines, dishwashers, food prep, beverage equipment, and preventive maintenance."],
-      ["How much is diagnostics?", "Diagnostics start at $159. A repair quote is prepared after inspection."],
+      ["How do diagnostics work?", "Forten performs fast on-site diagnostics and prepares a clear repair quote after inspection."],
       ["Do you offer emergency service?", "Yes. Critical failures that stop service or risk product loss are prioritized."],
       ["Do you use hourly pricing?", "Forten uses clear flat-rate repair quotes after diagnostics whenever possible."]
     ],
@@ -210,7 +210,7 @@ const copy = {
       "Профилактическое обслуживание"
     ],
     heroBody: "Премиальный сервис для ресторанов, кафе, пекарен, баров, отелей, продуктовых магазинов, фудтраков и коммерческих кухонь в Tampa Bay и Central Florida.",
-    trustStats: ["Диагностика от $159", "Быстрая смета после диагностики", "Специалисты по коммерческому оборудованию"],
+    trustStats: ["Быстрая выездная диагностика", "Быстрая смета после диагностики", "Специалисты по коммерческому оборудованию"],
     servicesEyebrow: "Категории ремонта",
     servicesTitle: "Мы ремонтируем оборудование, на котором держится сервис.",
     servicesBody: "Каждая категория сфокусирована на коммерческом ресторанном оборудовании: холодильные поломки, тепловая линия, мойка и профилактика.",
@@ -285,7 +285,7 @@ const copy = {
     whyTitle: "Сервис для коммерческих кухонь, а не бытовой ремонт.",
     why: [
       "Фокус на коммерческом ресторанном оборудовании",
-      "Диагностика от $159",
+      "Быстрая выездная диагностика",
       "Фиксированная смета после осмотра",
       "Фото, показания и понятные выводы",
       "Гарантия и условия указаны ясно",
@@ -304,7 +304,7 @@ const copy = {
     faqTitle: "Частые вопросы",
     faq: [
       ["Какое оборудование вы ремонтируете?", "Коммерческое холодильное, тепловое, грили, льдогенераторы, посудомойки, оборудование подготовки, напитков и профилактику."],
-      ["Сколько стоит диагностика?", "Диагностика начинается от $159. Смета на ремонт готовится после осмотра."],
+      ["Как проходит диагностика?", "Forten выполняет быструю выездную диагностику и готовит понятную смету после осмотра."],
       ["Есть ли срочный сервис?", "Да. Критические поломки, которые останавливают сервис или создают риск потери продуктов, получают приоритет."],
       ["Вы работаете по часам?", "Forten по возможности использует понятные фиксированные сметы после диагностики."]
     ],
