@@ -5,7 +5,6 @@ import { useState } from "react";
 import {
   ArrowRight,
   BadgeCheck,
-  Clock,
   Languages,
   Mail,
   MapPin,
@@ -17,7 +16,8 @@ import {
 } from "lucide-react";
 import { businessTypes, equipmentTypes } from "./data";
 
-const heroImage = "/images/equipment/hero-commercial-kitchen.jpg";
+const heroImage = "/images/equipment/hero-commercial-kitchen.jpg?v=clean";
+const logoImage = "/images/equipment/Logo.jpg?v=brand";
 
 const serviceImages = [
   "/images/equipment/refrigeration.jpg",
@@ -41,10 +41,12 @@ const copy = {
     nav: ["Services", "Equipment", "Process", "FAQ", "Contact"],
     request: "Request Service",
     emergency: "Emergency 24/7",
-    callNow: "Call Now",
+    callNow: "Call 689-220-8902",
     company: "Forten Commercial Equipment Services",
+    heroBrandLine: "Commercial Equipment Services",
     kicker: "Commercial Kitchen Equipment Repair & Maintenance",
     title: "Commercial Restaurant Equipment Repair",
+    heroTitleLines: ["Commercial", "Restaurant", "Equipment Repair"],
     subheadline: [
       "Commercial Refrigeration",
       "Cooking Equipment",
@@ -53,10 +55,12 @@ const copy = {
       "Walk-in Freezers",
       "Dishwashers",
       "Mixers",
+      "Hood & Ventilation",
       "Preventive Maintenance"
     ],
-    heroBody: "Premium equipment repair for restaurants, cafes, bakeries, bars, hotels, grocery stores, food trucks, and commercial kitchens across Tampa Bay and Central Florida.",
-    trustStats: ["Fast On-Site Diagnostics", "Fast estimate after diagnostic", "Commercial equipment specialists"],
+    heroBody: "Commercial kitchen equipment repair and maintenance for restaurants, cafes, bakeries, hotels, food trucks, grocery stores and commercial kitchens across Tampa Bay and Central Florida.",
+    heroBadges: ["24/7 Emergency Service", "Fast Response", "Commercial Equipment Specialists"],
+    stats: ["24/7 Emergency Service", "Fast On-Site Diagnostics", "Commercial Equipment Specialists", "Tampa Bay & Central Florida"],
     servicesEyebrow: "Equipment repair categories",
     servicesTitle: "We repair the machines that keep service running.",
     servicesBody: "Every service category is focused on commercial restaurant equipment, from refrigeration failures to cooking line breakdowns and preventive maintenance.",
@@ -127,30 +131,29 @@ const copy = {
         text: "Scheduled cleaning, inspection, calibration, wear checks, service history, and next-service recommendations."
       }
     ],
-    processEyebrow: "Service process",
-    processTitle: "A clear workflow from request to repair.",
+    processEyebrow: "How We Work",
+    processTitle: "A clear path from service request to warranty-backed repair.",
     process: [
-      ["Request", "Send equipment details and urgency."],
-      ["Technician Visit", "On-site inspection and readings."],
-      ["Mentor Diagnosis", "Senior review of findings when needed."],
-      ["Quote", "Flat-rate repair plan after diagnostic."],
-      ["Payment", "Approval and payment before repair."],
-      ["Repair", "Repair completed and documented."]
+      ["Request Service", "Send equipment details, location, and preferred service time."],
+      ["Technician Visit", "A technician inspects the unit and documents readings."],
+      ["Fast Diagnostics", "Findings are reviewed and organized into a clear repair plan."],
+      ["Quote Approval", "You approve a flat-rate estimate before repair work begins."],
+      ["Repair & Warranty", "Repair is completed, documented, and backed by clear warranty terms."]
     ],
     brandsEyebrow: "Brands we service",
-    brandsTitle: "Commercial brands your kitchen already depends on.",
-    brands: ["True", "Traulsen", "Hoshizaki", "Manitowoc", "Frymaster", "Pitco", "Vulcan", "Blodgett", "Hobart", "Beverage-Air", "Turbo Air", "Delfield"],
+    brandsTitle: "Brands We Service",
+    brands: ["True", "Hoshizaki", "Manitowoc", "Turbo Air", "Traulsen", "Beverage-Air", "Hobart", "Vulcan", "Garland", "Southbend", "Pitco", "Frymaster", "Rational", "Delfield"],
     emergencyTitle: "Equipment down during service?",
     emergencyText: "Refrigeration failures, no-heat fryers, ovens down, dish machines not sanitizing, and ice machines out of production are prioritized as urgent service requests.",
     whyEyebrow: "Why Forten",
     whyTitle: "Built for commercial kitchens, not household repair.",
     why: [
-      "Commercial restaurant equipment focus",
-      "Fast On-Site Diagnostics",
-      "Flat-rate quote after inspection",
-      "Photos, readings, and documented findings",
-      "Warranty and terms listed clearly",
-      "Tampa Bay / Central Florida service area"
+      "Fast response",
+      "Flat-rate estimates",
+      "Mentor-supported diagnostics",
+      "Commercial equipment focus",
+      "Professional documentation",
+      "Preventive maintenance plans"
     ],
     reviewsEyebrow: "Customer reviews",
     reviewsTitle: "Operators need fast, clear answers.",
@@ -160,8 +163,9 @@ const copy = {
       ["Hotel Food Service", "Professional communication, clear photos, and a clean invoice. Exactly what we need for commercial equipment service."]
     ],
     areaEyebrow: "Service area",
-    areaTitle: "Tampa Bay and Central Florida commercial kitchens.",
-    areaText: "Serving restaurants, cafes, bakeries, bars, hotels, grocery stores, food trucks, farms, and institutional kitchens.",
+    areaTitle: "Service Areas",
+    areaText: "Commercial kitchen equipment service across Tampa Bay, the Gulf Coast, and Central Florida.",
+    serviceAreas: ["Tampa", "St. Petersburg", "Clearwater", "Brandon", "Wesley Chapel", "Lakeland", "Sarasota", "Orlando", "Central Florida"],
     faqTitle: "Common Questions",
     faq: [
       ["What equipment do you repair?", "Commercial refrigeration, cooking equipment, grills, ice machines, dishwashers, food prep, beverage equipment, and preventive maintenance."],
@@ -175,30 +179,32 @@ const copy = {
     error: "Request saved locally. Telegram notification is not configured or unavailable.",
     fields: {
       businessName: "Business name",
-      contact: "Contact person",
+      contact: "Contact name",
       phone: "Phone",
       email: "Email",
-      address: "Service address",
+      address: "Address",
       businessType: "Business type",
-      equipment: "Equipment",
+      equipment: "Equipment type",
       urgency: "Urgency",
-      issue: "What is happening?",
-      notes: "Access notes or preferred time",
+      issue: "Problem description",
+      notes: "Preferred service time",
       submit: "Send request"
     },
     urgencyOptions: ["Emergency", "Same day", "This week", "Preventive maintenance"],
-    contactLines: ["Tampa Bay / Central Florida", "service@forten.example", "(813) 555-0101"],
+    contactLines: ["Tampa Bay & Central Florida", "service@forten.example", "689-220-8902"],
     footer: "Commercial Kitchen Equipment Repair & Maintenance"
   },
   ru: {
     lang: "English",
-    nav: ["Услуги", "Оборудование", "Процесс", "FAQ", "Контакты"],
+    nav: ["Услуги", "Оборудование", "Процесс", "Вопросы", "Контакты"],
     request: "Оставить заявку",
     emergency: "Срочно 24/7",
-    callNow: "Позвонить",
+    callNow: "Позвонить 689-220-8902",
     company: "Forten Commercial Equipment Services",
+    heroBrandLine: "Сервис коммерческого оборудования",
     kicker: "Ремонт и обслуживание коммерческого кухонного оборудования",
     title: "Ремонт коммерческого ресторанного оборудования",
+    heroTitleLines: ["Коммерческое", "Ресторанное", "Оборудование"],
     subheadline: [
       "Коммерческое холодильное оборудование",
       "Тепловое оборудование",
@@ -207,10 +213,12 @@ const copy = {
       "Walk-in freezers",
       "Посудомоечные машины",
       "Миксеры",
+      "Вытяжка и вентиляция",
       "Профилактическое обслуживание"
     ],
-    heroBody: "Премиальный сервис для ресторанов, кафе, пекарен, баров, отелей, продуктовых магазинов, фудтраков и коммерческих кухонь в Tampa Bay и Central Florida.",
-    trustStats: ["Быстрая выездная диагностика", "Быстрая смета после диагностики", "Специалисты по коммерческому оборудованию"],
+    heroBody: "Ремонт и обслуживание коммерческого кухонного оборудования для ресторанов, кафе, пекарен, отелей, фудтраков, продуктовых магазинов и коммерческих кухонь в Tampa Bay и Central Florida.",
+    heroBadges: ["Срочный сервис 24/7", "Быстрый выезд", "Специалисты по коммерческому оборудованию"],
+    stats: ["Срочный сервис 24/7", "Быстрая выездная диагностика", "Специалисты по коммерческому оборудованию", "Tampa Bay и Central Florida"],
     servicesEyebrow: "Категории ремонта",
     servicesTitle: "Мы ремонтируем оборудование, на котором держится сервис.",
     servicesBody: "Каждая категория сфокусирована на коммерческом ресторанном оборудовании: холодильные поломки, тепловая линия, мойка и профилактика.",
@@ -266,30 +274,29 @@ const copy = {
         text: "Плановая очистка, проверка, калибровка, контроль износа, история сервиса и рекомендации по следующему визиту."
       }
     ],
-    processEyebrow: "Процесс сервиса",
-    processTitle: "Понятный путь от заявки до ремонта.",
+    processEyebrow: "Как мы работаем",
+    processTitle: "Понятный путь от заявки до ремонта с гарантией.",
     process: [
-      ["Заявка", "Вы отправляете оборудование и срочность."],
-      ["Визит техника", "Осмотр на объекте и показания."],
-      ["Диагностика ментора", "Старший специалист проверяет выводы при необходимости."],
-      ["Смета", "Фиксированный план ремонта после диагностики."],
-      ["Оплата", "Одобрение и оплата перед ремонтом."],
-      ["Ремонт", "Ремонт выполнен и задокументирован."]
+      ["Заявка на сервис", "Вы отправляете оборудование, адрес и удобное время."],
+      ["Визит техника", "Техник осматривает оборудование и фиксирует показания."],
+      ["Быстрая диагностика", "Результаты оформляются в понятный план ремонта."],
+      ["Одобрение сметы", "Вы утверждаете фиксированную смету до начала ремонта."],
+      ["Ремонт и гарантия", "Ремонт выполняется, документируется и сопровождается условиями гарантии."]
     ],
     brandsEyebrow: "Бренды",
-    brandsTitle: "Коммерческие бренды, от которых зависит ваша кухня.",
-    brands: ["True", "Traulsen", "Hoshizaki", "Manitowoc", "Frymaster", "Pitco", "Vulcan", "Blodgett", "Hobart", "Beverage-Air", "Turbo Air", "Delfield"],
+    brandsTitle: "Бренды, которые мы обслуживаем",
+    brands: ["True", "Hoshizaki", "Manitowoc", "Turbo Air", "Traulsen", "Beverage-Air", "Hobart", "Vulcan", "Garland", "Southbend", "Pitco", "Frymaster", "Rational", "Delfield"],
     emergencyTitle: "Оборудование остановило сервис?",
     emergencyText: "Поломки холодильного оборудования, фритюрницы без нагрева, печи в простое, посудомойки без санитарной температуры и льдогенераторы без льда получают приоритет.",
     whyEyebrow: "Почему Forten",
     whyTitle: "Сервис для коммерческих кухонь, а не бытовой ремонт.",
     why: [
-      "Фокус на коммерческом ресторанном оборудовании",
-      "Быстрая выездная диагностика",
-      "Фиксированная смета после осмотра",
-      "Фото, показания и понятные выводы",
-      "Гарантия и условия указаны ясно",
-      "Зона сервиса Tampa Bay / Central Florida"
+      "Быстрый выезд",
+      "Фиксированные сметы",
+      "Диагностика с поддержкой ментора",
+      "Фокус на коммерческом оборудовании",
+      "Профессиональная документация",
+      "Планы профилактического обслуживания"
     ],
     reviewsEyebrow: "Отзывы клиентов",
     reviewsTitle: "Операторам нужны быстрые и ясные ответы.",
@@ -299,8 +306,9 @@ const copy = {
       ["Отель, food service", "Профессиональная коммуникация, понятные фото и аккуратный счет. Именно это нужно для коммерческого сервиса."]
     ],
     areaEyebrow: "Зона сервиса",
-    areaTitle: "Коммерческие кухни Tampa Bay и Central Florida.",
-    areaText: "Обслуживаем рестораны, кафе, пекарни, бары, отели, продуктовые магазины, фудтраки, фермы и институциональные кухни.",
+    areaTitle: "Зоны обслуживания",
+    areaText: "Обслуживаем коммерческие кухни в Tampa Bay, на Gulf Coast и в Central Florida.",
+    serviceAreas: ["Tampa", "St. Petersburg", "Clearwater", "Brandon", "Wesley Chapel", "Lakeland", "Sarasota", "Orlando", "Central Florida"],
     faqTitle: "Частые вопросы",
     faq: [
       ["Какое оборудование вы ремонтируете?", "Коммерческое холодильное, тепловое, грили, льдогенераторы, посудомойки, оборудование подготовки, напитков и профилактику."],
@@ -314,19 +322,19 @@ const copy = {
     error: "Заявка сохранена локально. Telegram не настроен или временно недоступен.",
     fields: {
       businessName: "Название бизнеса",
-      contact: "Контактное лицо",
+      contact: "Имя контакта",
       phone: "Телефон",
       email: "Email",
-      address: "Адрес обслуживания",
+      address: "Адрес",
       businessType: "Тип бизнеса",
-      equipment: "Оборудование",
+      equipment: "Тип оборудования",
       urgency: "Срочность",
-      issue: "Что произошло?",
-      notes: "Доступ к объекту или удобное время",
+      issue: "Описание проблемы",
+      notes: "Предпочтительное время сервиса",
       submit: "Отправить заявку"
     },
     urgencyOptions: ["Срочно", "Сегодня", "На этой неделе", "Профилактическое обслуживание"],
-    contactLines: ["Tampa Bay / Central Florida", "service@forten.example", "(813) 555-0101"],
+    contactLines: ["Tampa Bay и Central Florida", "service@forten.example", "689-220-8902"],
     footer: "Ремонт и обслуживание коммерческого кухонного оборудования"
   }
 };
@@ -413,7 +421,9 @@ export default function HomePage() {
     <main className="premiumPublic">
       <header className="premiumNav">
         <a className="premiumBrand" href="/">
-          <span className="mark">F</span>
+          <span className="publicLogoWrap">
+            <Image src={logoImage} alt="Forten Service" width={320} height={160} priority />
+          </span>
           <span><strong>FORTEN</strong><small>{t.kicker}</small></span>
         </a>
         <nav>
@@ -430,23 +440,46 @@ export default function HomePage() {
       <section className="premiumHero">
         <Image className="premiumHeroImage" src={heroImage} alt={t.title} fill priority sizes="100vw" />
         <div className="heroContent">
-          <p className="eyebrow">{t.company}</p>
-          <h1>{t.title}</h1>
+          <div className="heroBrandBlock">
+            <span className="heroLogoWrap">
+              <Image src={logoImage} alt="Forten Service" width={320} height={160} priority />
+            </span>
+            <span>{t.heroBrandLine}</span>
+          </div>
+          <h1 aria-label={t.title}>
+            {t.heroTitleLines.map((line, index) => (
+              <span className={index === 1 ? "heroTitleAccent" : undefined} key={line}>{line}</span>
+            ))}
+          </h1>
           <div className="heroSubGrid">
             {t.subheadline.map((item) => <span key={item}><BadgeCheck size={16} />{item}</span>)}
           </div>
-          <p>{t.heroBody}</p>
+          <p className="heroBody">{t.heroBody}</p>
           <div className="heroActions">
             <a className="primary" href="#lead-form">{t.request}<ArrowRight size={18} /></a>
             <a className="secondary emergencyButton" href="#lead-form"><TimerReset size={17} />{t.emergency}</a>
-            <a className="secondary callButton" href="tel:+18135550101"><Phone size={17} />{t.callNow}</a>
+            <a className="secondary callButton" href="tel:+16892208902"><Phone size={17} />{t.callNow}</a>
           </div>
         </div>
-        <aside className="heroServiceGlass">
-          <div><Clock size={20} /><span>24/7</span></div>
-          <strong>{t.trustStats[0]}</strong>
-          {t.trustStats.slice(1).map((item) => <p key={item}><ShieldCheck size={16} />{item}</p>)}
+        <aside className="heroBadgeStack" aria-label={t.trustStats?.[0] || t.company}>
+          {t.heroBadges.map((item, index) => (
+            <span key={item}>{index === 0 ? <TimerReset size={17} /> : <ShieldCheck size={17} />}{item}</span>
+          ))}
         </aside>
+      </section>
+
+      <section className="heroStatsStrip" aria-label={t.stats[0]}>
+        {t.stats.map((item) => <span key={item}><BadgeCheck size={18} />{item}</span>)}
+      </section>
+
+      <section id="equipment" className="premiumSection equipmentStrip brandStrip">
+        <div className="premiumSectionHead">
+          <p className="eyebrow">{t.brandsEyebrow}</p>
+          <h2>{t.brandsTitle}</h2>
+        </div>
+        <div className="brandWall">
+          {t.brands.map((brand) => <span key={brand}>{brand}</span>)}
+        </div>
       </section>
 
       <section id="services" className="premiumSection darkSection">
@@ -468,16 +501,6 @@ export default function HomePage() {
               </div>
             </article>
           ))}
-        </div>
-      </section>
-
-      <section id="equipment" className="premiumSection equipmentStrip">
-        <div className="premiumSectionHead">
-          <p className="eyebrow">{t.brandsEyebrow}</p>
-          <h2>{t.brandsTitle}</h2>
-        </div>
-        <div className="brandWall">
-          {t.brands.map((brand) => <span key={brand}>{brand}</span>)}
         </div>
       </section>
 
@@ -539,17 +562,13 @@ export default function HomePage() {
           <p>{t.areaText}</p>
         </div>
         <div className="serviceMap">
-          <span>Tampa</span>
-          <span>St. Petersburg</span>
-          <span>Clearwater</span>
-          <span>Lakeland</span>
-          <span>Orlando Area</span>
+          {t.serviceAreas.map((area) => <span key={area}>{area}</span>)}
         </div>
       </section>
 
       <section id="faq" className="premiumSection faqPremium">
         <div className="premiumSectionHead">
-          <p className="eyebrow">FAQ</p>
+          <p className="eyebrow">{t.nav[3]}</p>
           <h2>{t.faqTitle}</h2>
         </div>
         <div className="faqGrid">
@@ -584,10 +603,12 @@ export default function HomePage() {
 
       <footer className="premiumFooter">
         <a className="premiumBrand" href="/">
-          <span className="mark">F</span>
+          <span className="publicLogoWrap footerLogoWrap">
+            <Image src={logoImage} alt="Forten Service" width={320} height={160} />
+          </span>
           <span><strong>FORTEN</strong><small>{t.footer}</small></span>
         </a>
-        <a href="tel:+18135550101"><Phone size={17} />{t.contactLines[2]}</a>
+        <a href="tel:+16892208902"><Phone size={17} />{t.contactLines[2]}</a>
       </footer>
 
     </main>
