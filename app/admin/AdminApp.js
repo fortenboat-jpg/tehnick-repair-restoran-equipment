@@ -34,6 +34,7 @@ import {
   sampleTickets,
   ticketStatuses
 } from "./v2Data";
+import { leadToTicket } from "../leadStorage";
 
 const sectionByTab = {
   Dashboard: "/admin",
@@ -86,10 +87,14 @@ const text = {
     kpis: ["Open Tickets", "Today's Diagnostics", "Pending Quotes", "Unpaid Invoices", "Revenue This Month", "Technician Performance"],
     labels: {
       status: "Status",
+      source: "Source",
       customer: "Customer",
       business: "Business",
       address: "Address",
       equipment: "Equipment",
+      phone: "Phone",
+      email: "Email",
+      contactMethod: "Preferred contact",
       technician: "Technician",
       mentor: "Mentor",
       photos: "Photos",
@@ -538,7 +543,12 @@ function TicketsPanel({ t, lang, tickets, equipment, selectedTicket, setSelected
         <h2>{t.modules.tickets}</h2>
         <div className="recordList">{tickets.map((ticket) => (
           <button className={`ticketRow ${selectedTicket.id === ticket.id ? "active" : ""}`} key={ticket.id} onClick={() => setSelectedTicketId(ticket.id)}>
-            <strong>{ticket.ticketNumber}</strong><span>{ticket.businessName}</span><em>{labelStatus(ticket.status, lang)}</em>
+            <strong>{ticket.ticketNumber}</strong>
+            <span>{ticket.businessName}</span>
+            <span>{ticket.phone || "-"} | {ticket.source || "-"}</span>
+            <span>{ticket.equipment || "-"}</span>
+            <span>{ticket.problem || "-"}</span>
+            <em>{labelStatus(ticket.status, lang)}</em>
           </button>
         ))}</div>
       </section>
@@ -572,10 +582,15 @@ function TicketsPanel({ t, lang, tickets, equipment, selectedTicket, setSelected
 function TicketDetail({ t, lang, ticket, equipment }) {
   const rows = [
     [t.labels.status, labelStatus(ticket.status, lang)],
+    [adminLabel(t, lang, "source"), ticket.source || "-"],
     [t.labels.customer, ticket.customer],
     [t.labels.business, ticket.businessName],
+    [adminLabel(t, lang, "phone"), ticket.phone],
+    [adminLabel(t, lang, "email"), ticket.email],
+    [adminLabel(t, lang, "contactMethod"), ticket.preferredContactMethod],
     [t.labels.address, ticket.address],
     [t.labels.equipment, ticket.equipment],
+    [adminLabel(t, lang, "problem"), ticket.problem],
     [t.labels.location, equipment?.location],
     [t.labels.installationDate, equipment?.installationDate],
     [t.labels.warrantyStatus, equipment?.warrantyStatus],
@@ -803,52 +818,16 @@ function mergeBy(list, key) {
   return [...new globalThis.Map(list.map((item) => [item[key], item])).values()];
 }
 
+function adminLabel(t, lang, key) {
+  const fallback = {
+    en: { source: "Source", phone: "Phone", email: "Email", contactMethod: "Preferred contact", problem: "Problem description" },
+    ru: { source: "Источник", phone: "Телефон", email: "Email", contactMethod: "Предпочтительный контакт", problem: "Описание проблемы" }
+  };
+  return t.labels[key] || fallback[lang]?.[key] || fallback.en[key] || key;
+}
+
 function ticketsFromLeads(leads) {
-  return leads.map((lead, index) => ({
-    id: `website-${lead.id || index}`,
-    ticketNumber: `FS-2026-W${String(index + 1).padStart(6, "0")}`,
-    status: "NEW LEAD",
-    customerId: "",
-    customer: lead.contact,
-    businessName: lead.businessName,
-    address: lead.address,
-    equipment: lead.equipment,
-    equipmentId: "",
-    manufacturer: "",
-    model: "",
-    serial: "",
-    problem: lead.issue,
-    technician: "",
-    mentor: "Senior Mentor",
-    diagnosticNotes: lead.notes || "Website request waiting for dispatch.",
-    temperatureReadings: "-",
-    pressureReadings: "-",
-    voltageReadings: "-",
-    photos: "Photos pending",
-    videos: "Videos pending",
-    mentorDiagnosis: "Pending diagnostic and mentor review.",
-    quoteTotal: 0,
-    invoiceStatus: "Not generated",
-    gpsTime: "Not started",
-    beforeAfter: "Pending"
-    ,
-    attachments: { photos: ["Upload placeholder"], videos: ["Upload placeholder"], documents: ["Website request"] },
-    timeline: [
-      ["Created", new Date().toLocaleString()],
-      ["Assigned", "Pending"],
-      ["On The Way", "Pending"],
-      ["Arrived", "Pending"],
-      ["Diagnostic", "Pending"],
-      ["Mentor Review", "Pending"],
-      ["Quote Generated", "Pending"],
-      ["Approved", "Pending"],
-      ["Invoice Sent", "Pending"],
-      ["Paid", "Pending"],
-      ["Repair Started", "Pending"],
-      ["Completed", "Pending"],
-      ["Closed", "Pending"]
-    ]
-  }));
+  return leads.map((lead, index) => leadToTicket(lead, index));
 }
 
 function timelineFor(ticket) {

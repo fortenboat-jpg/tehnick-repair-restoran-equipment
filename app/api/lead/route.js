@@ -11,6 +11,7 @@ export async function POST(request) {
 
   const text = [
     "New Forten website lead",
+    `Ticket: ${lead.ticketNumber || "-"}`,
     `Business: ${lead.businessName || "-"}`,
     `Contact: ${lead.contact || "-"}`,
     `Phone: ${lead.phone || "-"}`,
@@ -18,9 +19,12 @@ export async function POST(request) {
     `Address: ${lead.address || "-"}`,
     `Type: ${lead.businessType || "-"}`,
     `Equipment: ${lead.equipment || "-"}`,
+    `Brand / Model: ${lead.brandModel || "-"}`,
     `Urgency: ${lead.urgency || "-"}`,
+    `Preferred Contact: ${lead.preferredContactMethod || "-"}`,
     `Issue: ${lead.issue || "-"}`,
-    `Notes: ${lead.notes || "-"}`
+    `Preferred Service Time: ${lead.notes || "-"}`,
+    "Source: Website"
   ].join("\n");
 
   try {

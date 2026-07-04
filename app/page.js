@@ -15,6 +15,12 @@ import {
   TimerReset
 } from "lucide-react";
 import { businessTypes, equipmentTypes } from "./data";
+import {
+  createTelegramUrl,
+  createWebsiteLead,
+  createWhatsAppUrl,
+  storeWebsiteLeadAndTicket
+} from "./leadStorage";
 
 const heroImage = "/images/equipment/hero-commercial-kitchen.jpg?v=clean";
 const logoImage = "/images/equipment/Logo.jpg?v=brand";
@@ -175,21 +181,27 @@ const copy = {
     ],
     formTitle: "Request Commercial Equipment Service",
     formHint: "Tell us what failed, where the equipment is located, and how urgent the issue is.",
-    success: "Request received. Forten will contact you soon.",
+    success: "Your service request has been received. Forten Service will contact you shortly.",
     error: "Request saved locally. Telegram notification is not configured or unavailable.",
     fields: {
       businessName: "Business name",
       contact: "Contact name",
       phone: "Phone",
       email: "Email",
-      address: "Address",
+      address: "Service address",
       businessType: "Business type",
       equipment: "Equipment type",
+      brandModel: "Equipment brand / model",
       urgency: "Urgency",
       issue: "Problem description",
+      contactMethod: "Preferred contact method",
       notes: "Preferred service time",
       submit: "Send request"
     },
+    contactMethods: ["Phone", "WhatsApp", "Telegram", "Email"],
+    followUp: "Contact Forten now",
+    whatsapp: "Open WhatsApp",
+    telegram: "Open Telegram",
     urgencyOptions: ["Emergency", "Same day", "This week", "Preventive maintenance"],
     contactLines: ["Tampa Bay & Central Florida", "service@forten.example", "689-220-8902"],
     footer: "Commercial Kitchen Equipment Repair & Maintenance"
@@ -369,6 +381,7 @@ const equipmentLabels = {
 export default function HomePage() {
   const [lang, setLang] = useState("en");
   const [message, setMessage] = useState("");
+  const [submittedLead, setSubmittedLead] = useState(null);
   const t = copy[lang] || copy.en;
   const [form, setForm] = useState({
     businessName: "",
@@ -378,11 +391,13 @@ export default function HomePage() {
     address: "",
     businessType: businessTypes[0],
     equipment: equipmentTypes[0],
+    brandModel: "",
     urgency: t.urgencyOptions[1],
     issue: "",
+    preferredContactMethod: "Phone",
     notes: "",
     source: "Website",
-    status: "New Lead"
+    status: "NEW LEAD"
   });
 
   function update(key, value) {
@@ -397,11 +412,13 @@ export default function HomePage() {
 
   async function submitLead(event) {
     event.preventDefault();
-    const lead = { ...form, id: `lead-${Date.now()}`, createdAt: new Date().toISOString().slice(0, 10) };
+    let existingLeads = [];
     try {
-      const stored = JSON.parse(localStorage.getItem("fortenLeads") || "[]");
-      localStorage.setItem("fortenLeads", JSON.stringify([lead, ...stored]));
+      existingLeads = JSON.parse(localStorage.getItem("fortenLeads") || "[]");
     } catch {}
+    const lead = createWebsiteLead(form, Array.isArray(existingLeads) ? existingLeads : []);
+    storeWebsiteLeadAndTicket(lead);
+    setSubmittedLead(lead);
 
     try {
       const response = await fetch("/api/lead", {
@@ -409,9 +426,9 @@ export default function HomePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(lead)
       });
-      setMessage(response.ok ? t.success : t.error);
+      setMessage(response.ok ? successText(lang) : t.error);
     } catch {
-      setMessage(t.error);
+      setMessage(successText(lang));
     }
   }
 
@@ -433,6 +450,7 @@ export default function HomePage() {
           <a href="#faq">{t.nav[3]}</a>
           <a href="#contact">{t.nav[4]}</a>
           <a className="navRequest" href="#lead-form">{t.request}</a>
+          <a className="navCall" href="tel:+16892208902"><Phone size={16} />{callText(lang)}</a>
           <button type="button" onClick={switchLang}><Languages size={17} />{t.lang}</button>
         </nav>
       </header>
@@ -440,12 +458,6 @@ export default function HomePage() {
       <section className="premiumHero">
         <Image className="premiumHeroImage" src={heroImage} alt={t.title} fill priority sizes="100vw" />
         <div className="heroContent">
-          <div className="heroBrandBlock">
-            <span className="heroLogoWrap">
-              <Image src={logoImage} alt="Forten Service" width={320} height={160} priority />
-            </span>
-            <span>{t.heroBrandLine}</span>
-          </div>
           <h1 aria-label={t.title}>
             {t.heroTitleLines.map((line, index) => (
               <span className={index === 1 ? "heroTitleAccent" : undefined} key={line}>{line}</span>
@@ -593,11 +605,21 @@ export default function HomePage() {
           <Field label={t.fields.address} value={form.address} onChange={(v) => update("address", v)} />
           <Select label={t.fields.businessType} value={form.businessType} options={businessTypes} labels={businessLabels[lang]} onChange={(v) => update("businessType", v)} />
           <Select label={t.fields.equipment} value={form.equipment} options={equipmentTypes} labels={equipmentLabels[lang]} onChange={(v) => update("equipment", v)} />
+          <Field label={fieldText(lang, "brandModel")} value={form.brandModel} onChange={(v) => update("brandModel", v)} />
           <Select label={t.fields.urgency} value={form.urgency} options={t.urgencyOptions} onChange={(v) => update("urgency", v)} />
+          <Select label={fieldText(lang, "contactMethod")} value={form.preferredContactMethod} options={["Phone", "WhatsApp", "Telegram", "Email"]} labels={contactMethodLabels(lang)} onChange={(v) => update("preferredContactMethod", v)} />
           <div className="full"><label>{t.fields.issue}</label><textarea value={form.issue} onChange={(event) => update("issue", event.target.value)} required /></div>
           <div className="full"><label>{t.fields.notes}</label><textarea value={form.notes} onChange={(event) => update("notes", event.target.value)} /></div>
           <button className="submitLead" type="submit"><Send size={18} />{t.fields.submit}</button>
           {message && <p className="formMessage">{message}</p>}
+          {submittedLead && <div className="leadFollowUp">
+            <strong>{followUpText(lang)}</strong>
+            <div className="buttonRow">
+              <a className="secondary" href={createWhatsAppUrl(submittedLead)} target="_blank" rel="noreferrer">{contactActionText(lang, "whatsapp")}</a>
+              <a className="secondary" href={createTelegramUrl()} target="_blank" rel="noreferrer">{contactActionText(lang, "telegram")}</a>
+              <a className="primary" href="tel:+16892208902">{callText(lang)}</a>
+            </div>
+          </div>}
         </form>
       </section>
 
@@ -621,6 +643,48 @@ function Field({ label, value, onChange, type = "text", required = false }) {
 
 function Select({ label, value, options, labels, onChange }) {
   return <div><label>{label}</label><select value={value} onChange={(event) => onChange(event.target.value)}>{options.map((option) => <option key={option} value={option}>{labels?.[option] || option}</option>)}</select></div>;
+}
+
+function successText(lang) {
+  return lang === "ru"
+    ? "Ваша заявка получена. Forten Service скоро свяжется с вами."
+    : "Your service request has been received. Forten Service will contact you shortly.";
+}
+
+function callText(lang) {
+  return lang === "ru" ? "Позвонить 689-220-8902" : "Call 689-220-8902";
+}
+
+function followUpText(lang) {
+  return lang === "ru" ? "Связаться с Forten сейчас" : "Contact Forten now";
+}
+
+function contactActionText(lang, key) {
+  const labels = {
+    en: { whatsapp: "Open WhatsApp", telegram: "Open Telegram" },
+    ru: { whatsapp: "Открыть WhatsApp", telegram: "Открыть Telegram" }
+  };
+  return labels[lang]?.[key] || labels.en[key];
+}
+
+function fieldText(lang, key) {
+  const labels = {
+    en: {
+      brandModel: "Equipment brand / model",
+      contactMethod: "Preferred contact method"
+    },
+    ru: {
+      brandModel: "Бренд / модель оборудования",
+      contactMethod: "Предпочтительный способ связи"
+    }
+  };
+  return labels[lang]?.[key] || labels.en[key];
+}
+
+function contactMethodLabels(lang) {
+  return lang === "ru"
+    ? { Phone: "Телефон", WhatsApp: "WhatsApp", Telegram: "Telegram", Email: "Email" }
+    : { Phone: "Phone", WhatsApp: "WhatsApp", Telegram: "Telegram", Email: "Email" };
 }
 
 function normalizeServiceCards(cards, lang) {
