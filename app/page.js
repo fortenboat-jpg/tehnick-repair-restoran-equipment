@@ -78,12 +78,12 @@ const copy = {
       },
       {
         title: "Commercial Fryers",
-        equipment: "Pitco fryer, Frymaster fryer, gas and electric fryers",
+        equipment: "Gas fryer, electric fryer, high-volume commercial fryers",
         text: "Ignition, burners, thermostats, baskets, oil temperature issues, safety controls, and fryer line downtime."
       },
       {
         title: "Commercial Ovens",
-        equipment: "Convection oven, Rational oven, commercial oven",
+        equipment: "Convection oven, combi oven, commercial oven",
         text: "Ovens, ranges, sensors, controls, fans, ignition systems, airflow problems, and inconsistent heat."
       },
       {
@@ -113,7 +113,7 @@ const copy = {
       },
       {
         title: "Food Preparation Equipment",
-        equipment: "Hobart mixer, meat slicer, food processor",
+        equipment: "Commercial mixer, meat slicer, food processor",
         text: "Drive systems, belts, switches, guards, motors, attachments, slicer carriages, and prep production downtime."
       },
       {
@@ -147,9 +147,10 @@ const copy = {
       ["Professional Repair", "Repair is completed, documented, and backed by clear warranty terms."],
       ["Follow-Up Support", "Forten keeps service history organized for future visits."]
     ],
-    brandsEyebrow: "Brands we service",
-    brandsTitle: "Brands We Service",
-    brands: ["True", "Turbo Air", "Traulsen", "Hoshizaki", "Manitowoc", "Scotsman", "Beverage-Air", "Hobart", "Vulcan", "Garland", "Southbend", "Pitco", "Frymaster", "Rational"],
+    coverageEyebrow: "Equipment coverage",
+    coverageTitle: "We Service All Major Commercial Equipment Types",
+    coverageText: "Forten works with commercial kitchen equipment across many manufacturers and configurations. If your restaurant, cafe, bakery, bar, hotel, grocery store, food truck, or commercial kitchen depends on it, we can diagnose and service it.",
+    coverageCategories: ["Refrigeration", "Freezers", "Ice Machines", "Fryers", "Ovens", "Griddles", "Dishwashers", "Mixers", "Slicers", "Beverage Equipment", "Hood & Ventilation", "Preventive Maintenance"],
     emergencyTitle: "Equipment down during service?",
     emergencyText: "Refrigeration failures, no-heat fryers, ovens down, dish machines not sanitizing, and ice machines out of production are prioritized as urgent service requests.",
     whyEyebrow: "Why Forten",
@@ -275,7 +276,7 @@ const copy = {
       },
       {
         title: "Оборудование подготовки продуктов",
-        equipment: "Hobart mixer, meat slicer, food processor",
+        equipment: "Коммерческий миксер, meat slicer, food processor",
         text: "Приводы, ремни, выключатели, защита, моторы, насадки, каретки слайсеров и простой подготовки."
       },
       {
@@ -308,9 +309,10 @@ const copy = {
       ["Одобрение сметы", "Вы утверждаете фиксированную смету до начала ремонта."],
       ["Ремонт и гарантия", "Ремонт выполняется, документируется и сопровождается условиями гарантии."]
     ],
-    brandsEyebrow: "Бренды",
-    brandsTitle: "Бренды, которые мы обслуживаем",
-    brands: ["True", "Hoshizaki", "Manitowoc", "Turbo Air", "Traulsen", "Beverage-Air", "Hobart", "Vulcan", "Garland", "Southbend", "Pitco", "Frymaster", "Rational", "Delfield"],
+    coverageEyebrow: "Охват оборудования",
+    coverageTitle: "Мы обслуживаем все основные виды коммерческого оборудования",
+    coverageText: "Forten работает с коммерческим кухонным оборудованием разных производителей и конфигураций. Если от этого оборудования зависит работа вашего ресторана, кафе, пекарни, бара, отеля, магазина, фудтрака или коммерческой кухни — мы можем провести диагностику и обслуживание.",
+    coverageCategories: ["Холодильное оборудование", "Морозильники", "Льдогенераторы", "Фритюрницы", "Печи", "Грили и griddles", "Посудомоечные машины", "Миксеры", "Слайсеры", "Оборудование для напитков", "Вытяжка и вентиляция", "Профилактическое обслуживание"],
     emergencyTitle: "Оборудование остановило сервис?",
     emergencyText: "Поломки холодильного оборудования, фритюрницы без нагрева, печи в простое, посудомойки без санитарной температуры и льдогенераторы без льда получают приоритет.",
     whyEyebrow: "Почему Forten",
@@ -553,11 +555,12 @@ export default function HomePage() {
 
       <section id="equipment" className="premiumSection equipmentStrip brandStrip">
         <div className="premiumSectionHead">
-          <p className="eyebrow">{t.brandsEyebrow}</p>
-          <h2>{t.brandsTitle}</h2>
+          <p className="eyebrow">{t.coverageEyebrow}</p>
+          <h2>{t.coverageTitle}</h2>
+          <p>{t.coverageText}</p>
         </div>
         <div className="brandWall">
-          {t.brands.map((brand) => <span key={brand}><b>{brand.slice(0, 1)}</b>{brand}</span>)}
+          {t.coverageCategories.map((category) => <span key={category}><b>{category.slice(0, 1)}</b>{category}</span>)}
         </div>
       </section>
 
@@ -773,12 +776,12 @@ function normalizeServiceCards(cards, lang) {
     cards[0],
     {
       title: "Коммерческие фритюрницы",
-      equipment: "Pitco fryer, Frymaster fryer, газовые и электрические фритюрницы",
+      equipment: "Газовые и электрические коммерческие фритюрницы",
       text: "Розжиг, горелки, термостаты, корзины, температура масла, системы безопасности и простой линии."
     },
     {
       title: "Коммерческие печи",
-      equipment: "Convection oven, Rational oven, коммерческая печь",
+      equipment: "Convection oven, combi oven, коммерческая печь",
       text: "Печи, плиты, датчики, управление, вентиляторы, розжиг, воздушный поток и нестабильный нагрев."
     },
     cards[2],
