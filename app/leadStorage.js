@@ -2,8 +2,6 @@
 
 export const LEAD_STORE_KEY = "fortenLeads";
 export const TICKET_STORE_KEY = "fortenV2Tickets";
-export const FORTEN_PHONE_DISPLAY = "689-220-8902";
-export const FORTEN_PHONE_E164 = "16892208902";
 
 export function readStoredArray(key, fallback = []) {
   try {
@@ -34,13 +32,17 @@ export function nextServiceTicketNumber(existingLeads = [], date = new Date()) {
 
 export function createWebsiteLead(form, existingLeads = []) {
   const now = new Date();
+  const created = now.toISOString();
   return {
     ...form,
     id: `lead-${now.getTime()}`,
     ticketNumber: nextServiceTicketNumber(existingLeads, now),
-    createdAt: now.toISOString(),
+    createdAt: created,
+    created,
     source: "Website",
-    status: "NEW LEAD"
+    status: "NEW LEAD",
+    priority: "Normal",
+    assigned: "Dispatcher Queue"
   };
 }
 
@@ -53,6 +55,9 @@ export function leadToTicket(lead, index = 0) {
     ticketNumber,
     status: "NEW LEAD",
     source: "Website",
+    priority: lead.priority || "Normal",
+    assigned: lead.assigned || "Dispatcher Queue",
+    created: lead.created || lead.createdAt || createdAt.toISOString(),
     customerId: "",
     customer: lead.contact || lead.contactName || "",
     businessName: lead.businessName || "",
@@ -61,8 +66,9 @@ export function leadToTicket(lead, index = 0) {
     address: lead.address || lead.serviceAddress || "",
     equipment: lead.equipment || lead.equipmentType || "",
     equipmentId: "",
-    manufacturer: lead.brandModel || lead.equipmentBrandModel || "",
-    model: lead.brandModel || lead.equipmentBrandModel || "",
+    brand: lead.brand || lead.manufacturer || "",
+    manufacturer: lead.brand || lead.manufacturer || lead.brandModel || lead.equipmentBrandModel || "",
+    model: lead.model || lead.brandModel || lead.equipmentBrandModel || "",
     serial: "",
     problem: lead.issue || lead.problemDescription || "",
     preferredContactMethod: lead.preferredContactMethod || "Phone",
@@ -83,7 +89,7 @@ export function leadToTicket(lead, index = 0) {
     attachments: { photos: ["Upload placeholder"], videos: ["Upload placeholder"], documents: ["Website request"] },
     timeline: [
       ["Created", createdAt.toLocaleString()],
-      ["Assigned", "Pending"],
+      ["Assigned", lead.assigned || "Dispatcher Queue"],
       ["On The Way", "Pending"],
       ["Arrived", "Pending"],
       ["Diagnostic", "Pending"],
@@ -107,24 +113,4 @@ export function storeWebsiteLeadAndTicket(lead) {
   const tickets = readStoredArray(TICKET_STORE_KEY, []);
   writeStoredArray(TICKET_STORE_KEY, [ticket, ...tickets.filter((item) => item.ticketNumber !== ticket.ticketNumber)]);
   return ticket;
-}
-
-export function createWhatsAppUrl(lead) {
-  const message = [
-    "Forten Service Request",
-    `Business Name: ${lead.businessName || "-"}`,
-    `Contact Name: ${lead.contact || "-"}`,
-    `Phone: ${lead.phone || "-"}`,
-    `Address: ${lead.address || "-"}`,
-    `Equipment Type: ${lead.equipment || "-"}`,
-    `Problem Description: ${lead.issue || "-"}`,
-    "Source: Website"
-  ].join("\n");
-
-  return `https://wa.me/${FORTEN_PHONE_E164}?text=${encodeURIComponent(message)}`;
-}
-
-export function createTelegramUrl() {
-  // TODO: Replace with real Telegram bot username after bot is created.
-  return "https://t.me/FortenService";
 }

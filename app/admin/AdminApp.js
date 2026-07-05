@@ -95,6 +95,9 @@ const text = {
       phone: "Phone",
       email: "Email",
       contactMethod: "Preferred contact",
+      priority: "Priority",
+      assigned: "Assigned",
+      created: "Created",
       technician: "Technician",
       mentor: "Mentor",
       photos: "Photos",
@@ -588,6 +591,9 @@ function TicketDetail({ t, lang, ticket, equipment }) {
     [adminLabel(t, lang, "phone"), ticket.phone],
     [adminLabel(t, lang, "email"), ticket.email],
     [adminLabel(t, lang, "contactMethod"), ticket.preferredContactMethod],
+    [adminLabel(t, lang, "priority"), ticket.priority],
+    [adminLabel(t, lang, "assigned"), ticket.assigned],
+    [adminLabel(t, lang, "created"), ticket.created],
     [t.labels.address, ticket.address],
     [t.labels.equipment, ticket.equipment],
     [adminLabel(t, lang, "problem"), ticket.problem],
@@ -820,8 +826,8 @@ function mergeBy(list, key) {
 
 function adminLabel(t, lang, key) {
   const fallback = {
-    en: { source: "Source", phone: "Phone", email: "Email", contactMethod: "Preferred contact", problem: "Problem description" },
-    ru: { source: "Источник", phone: "Телефон", email: "Email", contactMethod: "Предпочтительный контакт", problem: "Описание проблемы" }
+    en: { source: "Source", phone: "Phone", email: "Email", contactMethod: "Preferred contact", priority: "Priority", assigned: "Assigned", created: "Created", problem: "Problem description" },
+    ru: { source: "Источник", phone: "Телефон", email: "Email", contactMethod: "Предпочтительный контакт", priority: "Приоритет", assigned: "Назначено", created: "Создано", problem: "Описание проблемы" }
   };
   return t.labels[key] || fallback[lang]?.[key] || fallback.en[key] || key;
 }

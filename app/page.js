@@ -12,18 +12,19 @@ import {
   Send,
   ShieldCheck,
   Star,
-  TimerReset
+  TimerReset,
+  Wrench
 } from "lucide-react";
 import { businessTypes, equipmentTypes } from "./data";
 import {
-  createTelegramUrl,
   createWebsiteLead,
-  createWhatsAppUrl,
   storeWebsiteLeadAndTicket
 } from "./leadStorage";
 
 const heroImage = "/images/equipment/hero-commercial-kitchen.jpg?v=clean";
 const logoImage = "/images/equipment/Logo.jpg?v=brand";
+const businessPhoneDisplay = "(813) 444-2434";
+const businessPhoneHref = "tel:+18134442434";
 
 const serviceImages = [
   "/images/equipment/refrigeration.jpg",
@@ -45,9 +46,8 @@ const copy = {
   en: {
     lang: "Русский",
     nav: ["Services", "Equipment", "Process", "FAQ", "Contact"],
-    request: "Request Service",
-    emergency: "Emergency 24/7",
-    callNow: "Call 689-220-8902",
+    request: "Schedule Service",
+    emergency: "Priority Dispatch",
     company: "Forten Commercial Equipment Services",
     heroBrandLine: "Commercial Equipment Services",
     kicker: "Commercial Kitchen Equipment Repair & Maintenance",
@@ -65,8 +65,8 @@ const copy = {
       "Preventive Maintenance"
     ],
     heroBody: "Commercial kitchen equipment repair and maintenance for restaurants, cafes, bakeries, hotels, food trucks, grocery stores and commercial kitchens across Tampa Bay and Central Florida.",
-    heroBadges: ["24/7 Emergency Service", "Fast Response", "Commercial Equipment Specialists"],
-    stats: ["24/7 Emergency Service", "Fast On-Site Diagnostics", "Commercial Equipment Specialists", "Tampa Bay & Central Florida"],
+    heroBadges: ["Priority Dispatch", "Fast Response", "Commercial Equipment Specialists"],
+    stats: ["Dispatcher-Led Service", "Fast On-Site Diagnostics", "Commercial Equipment Specialists", "Tampa Bay & Central Florida"],
     servicesEyebrow: "Equipment repair categories",
     servicesTitle: "We repair the machines that keep service running.",
     servicesBody: "Every service category is focused on commercial restaurant equipment, from refrigeration failures to cooking line breakdowns and preventive maintenance.",
@@ -138,28 +138,29 @@ const copy = {
       }
     ],
     processEyebrow: "How We Work",
-    processTitle: "A clear path from service request to warranty-backed repair.",
+    processTitle: "A clear field-service path from scheduling to follow-up support.",
     process: [
-      ["Request Service", "Send equipment details, location, and preferred service time."],
-      ["Technician Visit", "A technician inspects the unit and documents readings."],
-      ["Fast Diagnostics", "Findings are reviewed and organized into a clear repair plan."],
+      ["Schedule Service", "Send equipment details, location, and preferred service time."],
+      ["Dispatcher Review", "Your request enters the dispatch queue for review."],
+      ["On-Site Diagnostics", "A technician inspects the unit and documents readings."],
       ["Quote Approval", "You approve a flat-rate estimate before repair work begins."],
-      ["Repair & Warranty", "Repair is completed, documented, and backed by clear warranty terms."]
+      ["Professional Repair", "Repair is completed, documented, and backed by clear warranty terms."],
+      ["Follow-Up Support", "Forten keeps service history organized for future visits."]
     ],
     brandsEyebrow: "Brands we service",
     brandsTitle: "Brands We Service",
-    brands: ["True", "Hoshizaki", "Manitowoc", "Turbo Air", "Traulsen", "Beverage-Air", "Hobart", "Vulcan", "Garland", "Southbend", "Pitco", "Frymaster", "Rational", "Delfield"],
+    brands: ["True", "Turbo Air", "Traulsen", "Hoshizaki", "Manitowoc", "Scotsman", "Beverage-Air", "Hobart", "Vulcan", "Garland", "Southbend", "Pitco", "Frymaster", "Rational"],
     emergencyTitle: "Equipment down during service?",
     emergencyText: "Refrigeration failures, no-heat fryers, ovens down, dish machines not sanitizing, and ice machines out of production are prioritized as urgent service requests.",
     whyEyebrow: "Why Forten",
     whyTitle: "Built for commercial kitchens, not household repair.",
     why: [
-      "Fast response",
-      "Flat-rate estimates",
-      "Mentor-supported diagnostics",
-      "Commercial equipment focus",
-      "Professional documentation",
-      "Preventive maintenance plans"
+      "Fast Response",
+      "Professional Diagnostics",
+      "Commercial Equipment Specialists",
+      "Preventive Maintenance",
+      "Flat-Rate Estimates",
+      "Restaurant Equipment Experts"
     ],
     reviewsEyebrow: "Customer reviews",
     reviewsTitle: "Operators need fast, clear answers.",
@@ -176,12 +177,12 @@ const copy = {
     faq: [
       ["What equipment do you repair?", "Commercial refrigeration, cooking equipment, grills, ice machines, dishwashers, food prep, beverage equipment, and preventive maintenance."],
       ["How do diagnostics work?", "Forten performs fast on-site diagnostics and prepares a clear repair quote after inspection."],
-      ["Do you offer emergency service?", "Yes. Critical failures that stop service or risk product loss are prioritized."],
+      ["Do you prioritize urgent equipment failures?", "Yes. Critical failures that stop service or risk product loss are prioritized by dispatch."],
       ["Do you use hourly pricing?", "Forten uses clear flat-rate repair quotes after diagnostics whenever possible."]
     ],
-    formTitle: "Request Commercial Equipment Service",
+    formTitle: "Schedule Commercial Equipment Service",
     formHint: "Tell us what failed, where the equipment is located, and how urgent the issue is.",
-    success: "Your service request has been received. Forten Service will contact you shortly.",
+    success: "Your request has been received. A Forten dispatcher will contact you shortly.",
     error: "Request saved locally. Telegram notification is not configured or unavailable.",
     fields: {
       businessName: "Business name",
@@ -191,27 +192,39 @@ const copy = {
       address: "Service address",
       businessType: "Business type",
       equipment: "Equipment type",
-      brandModel: "Equipment brand / model",
+      brand: "Equipment brand",
+      model: "Equipment model",
       urgency: "Urgency",
       issue: "Problem description",
       contactMethod: "Preferred contact method",
       notes: "Preferred service time",
-      submit: "Send request"
+      submit: "Schedule Service"
     },
-    contactMethods: ["Phone", "WhatsApp", "Telegram", "Email"],
-    followUp: "Contact Forten now",
-    whatsapp: "Open WhatsApp",
-    telegram: "Open Telegram",
-    urgencyOptions: ["Emergency", "Same day", "This week", "Preventive maintenance"],
-    contactLines: ["Tampa Bay & Central Florida", "service@forten.example", "689-220-8902"],
+    contactMethods: ["Phone", "Email"],
+    confirmation: {
+      title: "Thank You!",
+      subtitle: "Your service request has been successfully received.",
+      ticket: "Ticket Number",
+      timeline: [
+        "Your request has been received.",
+        "It has been added to our dispatch queue.",
+        "A dispatcher will review your request.",
+        "We will contact you by phone or email shortly.",
+        "Technician will be scheduled"
+      ],
+      nextTitle: "What happens next?",
+      urgentTitle: "",
+      phoneLabel: ""
+    },
+    urgencyOptions: ["Priority dispatch", "Same day", "This week", "Preventive maintenance"],
+    contactLines: ["Tampa Bay & Central Florida", "service@forten.example", "(813) 444-2434"],
     footer: "Commercial Kitchen Equipment Repair & Maintenance"
   },
   ru: {
     lang: "English",
     nav: ["Услуги", "Оборудование", "Процесс", "Вопросы", "Контакты"],
     request: "Оставить заявку",
-    emergency: "Срочно 24/7",
-    callNow: "Позвонить 689-220-8902",
+    emergency: "Приоритетная диспетчеризация",
     company: "Forten Commercial Equipment Services",
     heroBrandLine: "Сервис коммерческого оборудования",
     kicker: "Ремонт и обслуживание коммерческого кухонного оборудования",
@@ -229,8 +242,8 @@ const copy = {
       "Профилактическое обслуживание"
     ],
     heroBody: "Ремонт и обслуживание коммерческого кухонного оборудования для ресторанов, кафе, пекарен, отелей, фудтраков, продуктовых магазинов и коммерческих кухонь в Tampa Bay и Central Florida.",
-    heroBadges: ["Срочный сервис 24/7", "Быстрый выезд", "Специалисты по коммерческому оборудованию"],
-    stats: ["Срочный сервис 24/7", "Быстрая выездная диагностика", "Специалисты по коммерческому оборудованию", "Tampa Bay и Central Florida"],
+    heroBadges: ["Приоритетная диспетчеризация", "Быстрый отклик", "Специалисты по коммерческому оборудованию"],
+    stats: ["Диспетчерская обработка", "Быстрая выездная диагностика", "Специалисты по коммерческому оборудованию", "Tampa Bay и Central Florida"],
     servicesEyebrow: "Категории ремонта",
     servicesTitle: "Мы ремонтируем оборудование, на котором держится сервис.",
     servicesBody: "Каждая категория сфокусирована на коммерческом ресторанном оборудовании: холодильные поломки, тепловая линия, мойка и профилактика.",
@@ -330,7 +343,7 @@ const copy = {
     ],
     formTitle: "Заявка на сервис коммерческого оборудования",
     formHint: "Опишите, что сломалось, где находится оборудование и насколько срочно нужен сервис.",
-    success: "Заявка получена. Forten скоро свяжется с вами.",
+    success: "Ваша заявка получена. Диспетчер Forten скоро свяжется с вами.",
     error: "Заявка сохранена локально. Telegram не настроен или временно недоступен.",
     fields: {
       businessName: "Название бизнеса",
@@ -345,8 +358,8 @@ const copy = {
       notes: "Предпочтительное время сервиса",
       submit: "Отправить заявку"
     },
-    urgencyOptions: ["Срочно", "Сегодня", "На этой неделе", "Профилактическое обслуживание"],
-    contactLines: ["Tampa Bay и Central Florida", "service@forten.example", "689-220-8902"],
+    urgencyOptions: ["Приоритетная диспетчеризация", "Сегодня", "На этой неделе", "Профилактическое обслуживание"],
+    contactLines: ["Tampa Bay и Central Florida", "service@forten.example", "(813) 444-2434"],
     footer: "Ремонт и обслуживание коммерческого кухонного оборудования"
   }
 };
@@ -382,6 +395,7 @@ export default function HomePage() {
   const [lang, setLang] = useState("en");
   const [message, setMessage] = useState("");
   const [submittedLead, setSubmittedLead] = useState(null);
+  const [isLeadModalOpen, setLeadModalOpen] = useState(false);
   const t = copy[lang] || copy.en;
   const [form, setForm] = useState({
     businessName: "",
@@ -391,7 +405,8 @@ export default function HomePage() {
     address: "",
     businessType: businessTypes[0],
     equipment: equipmentTypes[0],
-    brandModel: "",
+    brand: "",
+    model: "",
     urgency: t.urgencyOptions[1],
     issue: "",
     preferredContactMethod: "Phone",
@@ -410,6 +425,14 @@ export default function HomePage() {
     setForm((current) => ({ ...current, urgency: copy[nextLang].urgencyOptions[1] }));
   }
 
+  function openLeadModal() {
+    setLeadModalOpen(true);
+  }
+
+  function closeLeadModal() {
+    setLeadModalOpen(false);
+  }
+
   async function submitLead(event) {
     event.preventDefault();
     let existingLeads = [];
@@ -419,6 +442,7 @@ export default function HomePage() {
     const lead = createWebsiteLead(form, Array.isArray(existingLeads) ? existingLeads : []);
     storeWebsiteLeadAndTicket(lead);
     setSubmittedLead(lead);
+    setLeadModalOpen(true);
 
     try {
       const response = await fetch("/api/lead", {
@@ -433,6 +457,25 @@ export default function HomePage() {
   }
 
   const visibleServiceCards = normalizeServiceCards(t.serviceCards, lang);
+  const leadForm = (
+    <form className="leadForm premiumLeadForm modalLeadForm" onSubmit={submitLead}>
+      <Field label={t.fields.businessName} value={form.businessName} onChange={(v) => update("businessName", v)} required />
+      <Field label={t.fields.contact} value={form.contact} onChange={(v) => update("contact", v)} required />
+      <Field label={t.fields.phone} value={form.phone} onChange={(v) => update("phone", v)} required />
+      <Field label={t.fields.email} type="email" value={form.email} onChange={(v) => update("email", v)} />
+      <Field label={t.fields.address} value={form.address} onChange={(v) => update("address", v)} />
+      <Select label={t.fields.businessType} value={form.businessType} options={businessTypes} labels={businessLabels[lang]} onChange={(v) => update("businessType", v)} />
+      <Select label={t.fields.equipment} value={form.equipment} options={equipmentTypes} labels={equipmentLabels[lang]} onChange={(v) => update("equipment", v)} />
+      <Field label={fieldText(lang, "brand")} value={form.brand} onChange={(v) => update("brand", v)} />
+      <Field label={fieldText(lang, "model")} value={form.model} onChange={(v) => update("model", v)} />
+      <Select label={t.fields.urgency} value={form.urgency} options={t.urgencyOptions} onChange={(v) => update("urgency", v)} />
+      <Select label={fieldText(lang, "contactMethod")} value={form.preferredContactMethod} options={["Phone", "Email"]} labels={contactMethodLabels(lang)} onChange={(v) => update("preferredContactMethod", v)} />
+      <div className="full"><label>{t.fields.issue}</label><textarea value={form.issue} onChange={(event) => update("issue", event.target.value)} required /></div>
+      <div className="full"><label>{t.fields.notes}</label><textarea value={form.notes} onChange={(event) => update("notes", event.target.value)} /></div>
+      <button className="submitLead" type="submit"><Send size={18} />{scheduleText(lang)}</button>
+      {message && <p className="formMessage">{message}</p>}
+    </form>
+  );
 
   return (
     <main className="premiumPublic">
@@ -449,8 +492,7 @@ export default function HomePage() {
           <a href="#process">{t.nav[2]}</a>
           <a href="#faq">{t.nav[3]}</a>
           <a href="#contact">{t.nav[4]}</a>
-          <a className="navRequest" href="#lead-form">{t.request}</a>
-          <a className="navCall" href="tel:+16892208902"><Phone size={16} />{callText(lang)}</a>
+          <button className="navRequest navSchedule" type="button" onClick={openLeadModal}>{scheduleText(lang)}</button>
           <button type="button" onClick={switchLang}><Languages size={17} />{t.lang}</button>
         </nav>
       </header>
@@ -468,9 +510,8 @@ export default function HomePage() {
           </div>
           <p className="heroBody">{t.heroBody}</p>
           <div className="heroActions">
-            <a className="primary" href="#lead-form">{t.request}<ArrowRight size={18} /></a>
-            <a className="secondary emergencyButton" href="#lead-form"><TimerReset size={17} />{t.emergency}</a>
-            <a className="secondary callButton" href="tel:+16892208902"><Phone size={17} />{t.callNow}</a>
+            <button className="primary" type="button" onClick={openLeadModal}>{scheduleText(lang)}<ArrowRight size={18} /></button>
+            <button className="secondary emergencyButton" type="button" onClick={openLeadModal}><TimerReset size={17} />{t.emergency}</button>
           </div>
         </div>
         <aside className="heroBadgeStack" aria-label={t.trustStats?.[0] || t.company}>
@@ -480,8 +521,34 @@ export default function HomePage() {
         </aside>
       </section>
 
+      <section className="premiumSection splitPremium whyFortenSection">
+        <div>
+          <p className="eyebrow">{t.whyEyebrow}</p>
+          <h2>{t.whyTitle}</h2>
+        </div>
+        <div className="whyGrid">
+          {t.why.map((item, index) => <span key={item}><WhyIcon index={index} />{item}</span>)}
+        </div>
+      </section>
+
       <section className="heroStatsStrip" aria-label={t.stats[0]}>
         {t.stats.map((item) => <span key={item}><BadgeCheck size={18} />{item}</span>)}
+      </section>
+
+      <section id="process" className="premiumSection processPremium">
+        <div className="premiumSectionHead">
+          <p className="eyebrow">{t.processEyebrow}</p>
+          <h2>{t.processTitle}</h2>
+        </div>
+        <div className="premiumProcessGrid">
+          {t.process.map(([title, text], index) => (
+            <article key={title}>
+              <b>{index + 1}</b>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section id="equipment" className="premiumSection equipmentStrip brandStrip">
@@ -490,7 +557,7 @@ export default function HomePage() {
           <h2>{t.brandsTitle}</h2>
         </div>
         <div className="brandWall">
-          {t.brands.map((brand) => <span key={brand}>{brand}</span>)}
+          {t.brands.map((brand) => <span key={brand}><b>{brand.slice(0, 1)}</b>{brand}</span>)}
         </div>
       </section>
 
@@ -516,39 +583,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="process" className="premiumSection processPremium">
-        <div className="premiumSectionHead">
-          <p className="eyebrow">{t.processEyebrow}</p>
-          <h2>{t.processTitle}</h2>
-        </div>
-        <div className="premiumProcessGrid">
-          {t.process.map(([title, text], index) => (
-            <article key={title}>
-              <b>{String(index + 1).padStart(2, "0")}</b>
-              <h3>{title}</h3>
-              <p>{text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
       <section className="premiumEmergency">
         <div>
           <p className="eyebrow">{t.emergency}</p>
           <h2>{t.emergencyTitle}</h2>
           <p>{t.emergencyText}</p>
         </div>
-        <a className="primary" href="#lead-form">{t.request}<ArrowRight size={18} /></a>
-      </section>
-
-      <section className="premiumSection splitPremium">
-        <div>
-          <p className="eyebrow">{t.whyEyebrow}</p>
-          <h2>{t.whyTitle}</h2>
-        </div>
-        <div className="whyGrid">
-          {t.why.map((item) => <span key={item}><ShieldCheck size={18} />{item}</span>)}
-        </div>
+        <button className="primary" type="button" onClick={openLeadModal}>{scheduleText(lang)}<ArrowRight size={18} /></button>
       </section>
 
       <section className="premiumSection reviewsSection">
@@ -595,32 +636,13 @@ export default function HomePage() {
           <p>{t.formHint}</p>
           <div className="contactLine"><MapPin size={17} /> <span>{t.contactLines[0]}</span></div>
           <div className="contactLine"><Mail size={17} /> <span>{t.contactLines[1]}</span></div>
-          <div className="contactLine"><Phone size={17} /> <span>{t.contactLines[2]}</span></div>
+          <div className="contactLine"><Phone size={17} /> <span>{businessPhoneDisplay}</span></div>
         </div>
-        <form className="leadForm premiumLeadForm" onSubmit={submitLead}>
-          <Field label={t.fields.businessName} value={form.businessName} onChange={(v) => update("businessName", v)} required />
-          <Field label={t.fields.contact} value={form.contact} onChange={(v) => update("contact", v)} required />
-          <Field label={t.fields.phone} value={form.phone} onChange={(v) => update("phone", v)} required />
-          <Field label={t.fields.email} type="email" value={form.email} onChange={(v) => update("email", v)} />
-          <Field label={t.fields.address} value={form.address} onChange={(v) => update("address", v)} />
-          <Select label={t.fields.businessType} value={form.businessType} options={businessTypes} labels={businessLabels[lang]} onChange={(v) => update("businessType", v)} />
-          <Select label={t.fields.equipment} value={form.equipment} options={equipmentTypes} labels={equipmentLabels[lang]} onChange={(v) => update("equipment", v)} />
-          <Field label={fieldText(lang, "brandModel")} value={form.brandModel} onChange={(v) => update("brandModel", v)} />
-          <Select label={t.fields.urgency} value={form.urgency} options={t.urgencyOptions} onChange={(v) => update("urgency", v)} />
-          <Select label={fieldText(lang, "contactMethod")} value={form.preferredContactMethod} options={["Phone", "WhatsApp", "Telegram", "Email"]} labels={contactMethodLabels(lang)} onChange={(v) => update("preferredContactMethod", v)} />
-          <div className="full"><label>{t.fields.issue}</label><textarea value={form.issue} onChange={(event) => update("issue", event.target.value)} required /></div>
-          <div className="full"><label>{t.fields.notes}</label><textarea value={form.notes} onChange={(event) => update("notes", event.target.value)} /></div>
-          <button className="submitLead" type="submit"><Send size={18} />{t.fields.submit}</button>
-          {message && <p className="formMessage">{message}</p>}
-          {submittedLead && <div className="leadFollowUp">
-            <strong>{followUpText(lang)}</strong>
-            <div className="buttonRow">
-              <a className="secondary" href={createWhatsAppUrl(submittedLead)} target="_blank" rel="noreferrer">{contactActionText(lang, "whatsapp")}</a>
-              <a className="secondary" href={createTelegramUrl()} target="_blank" rel="noreferrer">{contactActionText(lang, "telegram")}</a>
-              <a className="primary" href="tel:+16892208902">{callText(lang)}</a>
-            </div>
-          </div>}
-        </form>
+        <div className="schedulePrompt">
+          <h3>{scheduleText(lang)}</h3>
+          <p>{modalIntroText(lang)}</p>
+          <button className="primary" type="button" onClick={openLeadModal}>{scheduleText(lang)}<ArrowRight size={18} /></button>
+        </div>
       </section>
 
       <footer className="premiumFooter">
@@ -630,8 +652,26 @@ export default function HomePage() {
           </span>
           <span><strong>FORTEN</strong><small>{t.footer}</small></span>
         </a>
-        <a href="tel:+16892208902"><Phone size={17} />{t.contactLines[2]}</a>
+        <a href={businessPhoneHref}><Phone size={17} />{businessPhoneDisplay}</a>
       </footer>
+
+      {isLeadModalOpen && (
+        <div className="leadModalBackdrop" role="presentation" onMouseDown={closeLeadModal}>
+          <section className="leadModal" role="dialog" aria-modal="true" aria-label={t.formTitle} onMouseDown={(event) => event.stopPropagation()}>
+            <button className="modalClose" type="button" aria-label="Close" onClick={closeLeadModal}>×</button>
+            {submittedLead ? <ConfirmationPanel lang={lang} lead={submittedLead} /> : (
+              <>
+                <div className="modalLeadHeader">
+                  <p className="eyebrow">{t.company}</p>
+                  <h2>{t.formTitle}</h2>
+                  <p>{modalIntroText(lang)}</p>
+                </div>
+                {leadForm}
+              </>
+            )}
+          </section>
+        </div>
+      )}
 
     </main>
   );
@@ -645,36 +685,75 @@ function Select({ label, value, options, labels, onChange }) {
   return <div><label>{label}</label><select value={value} onChange={(event) => onChange(event.target.value)}>{options.map((option) => <option key={option} value={option}>{labels?.[option] || option}</option>)}</select></div>;
 }
 
+function ConfirmationPanel({ lang, lead }) {
+  const text = confirmationText(lang);
+  return (
+    <article className="leadConfirmation">
+      <span className="confirmationIcon">✓</span>
+      <h2>{text.title}</h2>
+      <p>{text.subtitle}</p>
+      <p>{dispatcherContactText(lang)}</p>
+      <div className="ticketNumberBox">
+        <span>{text.ticket}</span>
+        <strong>{lead.ticketNumber}</strong>
+      </div>
+    </article>
+  );
+}
+
 function successText(lang) {
   return lang === "ru"
-    ? "Ваша заявка получена. Forten Service скоро свяжется с вами."
-    : "Your service request has been received. Forten Service will contact you shortly.";
+    ? "Ваша заявка получена. Диспетчер Forten скоро свяжется с вами."
+    : "Your request has been received. A Forten dispatcher will contact you shortly.";
 }
 
-function callText(lang) {
-  return lang === "ru" ? "Позвонить 689-220-8902" : "Call 689-220-8902";
+function scheduleText(lang) {
+  return lang === "ru" ? "Заказать услугу" : "Schedule Service";
 }
 
-function followUpText(lang) {
-  return lang === "ru" ? "Связаться с Forten сейчас" : "Contact Forten now";
+function modalIntroText(lang) {
+  return lang === "ru"
+    ? "Оставьте данные оборудования, и диспетчер Forten свяжется с вами для планирования сервиса."
+    : "Submit the equipment details and a Forten dispatcher will contact you shortly to coordinate service.";
 }
 
-function contactActionText(lang, key) {
-  const labels = {
-    en: { whatsapp: "Open WhatsApp", telegram: "Open Telegram" },
-    ru: { whatsapp: "Открыть WhatsApp", telegram: "Открыть Telegram" }
+function dispatcherContactText(lang) {
+  return lang === "ru"
+    ? "Диспетчер Forten скоро свяжется с вами."
+    : "A Forten dispatcher will contact you shortly.";
+}
+
+function WhyIcon({ index }) {
+  const icons = [TimerReset, BadgeCheck, ShieldCheck, Wrench, ArrowRight, Star];
+  const Icon = icons[index % icons.length];
+  return <Icon size={20} />;
+}
+
+function confirmationText(lang) {
+  if (lang === "ru") {
+    return {
+      title: "Спасибо!",
+      subtitle: "Ваша заявка на сервис успешно получена.",
+      ticket: "Номер заявки"
+    };
+  }
+  return {
+    title: "Thank You!",
+    subtitle: "Your service request has been successfully received.",
+    ticket: "Ticket Number"
   };
-  return labels[lang]?.[key] || labels.en[key];
 }
 
 function fieldText(lang, key) {
   const labels = {
     en: {
-      brandModel: "Equipment brand / model",
+      brand: "Equipment brand",
+      model: "Equipment model",
       contactMethod: "Preferred contact method"
     },
     ru: {
-      brandModel: "Бренд / модель оборудования",
+      brand: "Бренд оборудования",
+      model: "Модель оборудования",
       contactMethod: "Предпочтительный способ связи"
     }
   };
@@ -683,8 +762,8 @@ function fieldText(lang, key) {
 
 function contactMethodLabels(lang) {
   return lang === "ru"
-    ? { Phone: "Телефон", WhatsApp: "WhatsApp", Telegram: "Telegram", Email: "Email" }
-    : { Phone: "Phone", WhatsApp: "WhatsApp", Telegram: "Telegram", Email: "Email" };
+    ? { Phone: "Телефон", Email: "Email" }
+    : { Phone: "Phone", Email: "Email" };
 }
 
 function normalizeServiceCards(cards, lang) {
