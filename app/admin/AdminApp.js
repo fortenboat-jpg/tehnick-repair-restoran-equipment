@@ -90,11 +90,18 @@ const text = {
       source: "Source",
       customer: "Customer",
       business: "Business",
+      dispatcher: "Dispatcher",
+      businessName: "Business Name",
+      contactName: "Contact Name",
       address: "Address",
       equipment: "Equipment",
+      equipmentType: "Equipment Type",
+      brandModel: "Brand / Model",
       phone: "Phone",
       email: "Email",
       contactMethod: "Preferred contact",
+      preferredTime: "Preferred Service Time",
+      appointmentDate: "Appointment Date",
       priority: "Priority",
       assigned: "Assigned",
       created: "Created",
@@ -107,6 +114,11 @@ const text = {
       manufacturer: "Manufacturer",
       diagnostic: "Diagnostic Notes",
       mentorDiagnosis: "Mentor Diagnosis",
+      problem: "Problem Description",
+      internalNotes: "Internal Notes",
+      dispatcherNotes: "Dispatcher Notes",
+      mentorNotes: "Mentor Notes",
+      technicianNotes: "Technician Notes",
       quoteTotal: "Quote Total",
       invoiceStatus: "Invoice Status",
       rootCause: "Root Cause",
@@ -141,10 +153,14 @@ const text = {
     },
     actions: {
       assign: "Assign Technician",
+      assignMentor: "Assign Mentor",
       openTicket: "Open Ticket",
-      save: "Save Ticket",
+      save: "Save Changes",
       mentor: "Request Mentor",
       quote: "Generate Quote",
+      invoice: "Generate Invoice",
+      complete: "Mark Completed",
+      close: "Close Ticket",
       route: "Start Route",
       arrived: "Arrived",
       diagnostic: "Start Diagnostic",
@@ -217,10 +233,23 @@ const text = {
       status: "Статус",
       customer: "Клиент",
       business: "Бизнес",
+      dispatcher: "Диспетчер",
+      businessName: "Название бизнеса",
+      contactName: "Контактное лицо",
       address: "Адрес",
       equipment: "Оборудование",
+      equipmentType: "Тип оборудования",
+      brandModel: "Бренд / модель",
+      phone: "Телефон",
+      email: "Email",
+      contactMethod: "Предпочтительный контакт",
+      priority: "Приоритет",
+      assigned: "Назначено",
+      created: "Создано",
       technician: "Техник",
       mentor: "Ментор",
+      preferredTime: "Предпочтительное время сервиса",
+      appointmentDate: "Дата визита",
       photos: "Фото",
       videos: "Видео",
       model: "Модель",
@@ -228,6 +257,11 @@ const text = {
       manufacturer: "Производитель",
       diagnostic: "Заметки диагностики",
       mentorDiagnosis: "Диагноз ментора",
+      problem: "Описание проблемы",
+      internalNotes: "Внутренние заметки",
+      dispatcherNotes: "Заметки диспетчера",
+      mentorNotes: "Заметки ментора",
+      technicianNotes: "Заметки техника",
       quoteTotal: "Сумма сметы",
       invoiceStatus: "Статус счета",
       rootCause: "Причина неисправности",
@@ -262,10 +296,14 @@ const text = {
     },
     actions: {
       assign: "Назначить техника",
+      assignMentor: "Назначить ментора",
       openTicket: "Открыть тикет",
-      save: "Сохранить тикет",
+      save: "Сохранить изменения",
       mentor: "Запросить ментора",
       quote: "Создать смету",
+      invoice: "Создать счет",
+      complete: "Отметить завершенным",
+      close: "Закрыть тикет",
       route: "Начать маршрут",
       arrived: "Прибыл",
       diagnostic: "Начать диагностику",
@@ -428,6 +466,18 @@ export default function AdminApp({ initialTab = "Dashboard" }) {
     setTickets((items) => items.map((ticket) => ticket.id === id ? { ...ticket, ...changes } : ticket));
   }
 
+  function saveTicket(id, changes, eventName = "Edited") {
+    setTickets((items) => items.map((ticket) => {
+      if (ticket.id !== id) return ticket;
+      const next = { ...ticket, ...changes };
+      next.timeline = stampTimeline(next.timeline || ticket.timeline, eventName);
+      if (changes.status && changes.status !== ticket.status) {
+        next.timeline = stampTimeline(updateTimeline(next.timeline, changes.status), "Status Changed");
+      }
+      return next;
+    }));
+  }
+
   function updateStatus(ticket, status) {
     patchTicket(ticket.id, {
       status,
@@ -495,7 +545,7 @@ export default function AdminApp({ initialTab = "Dashboard" }) {
           <a className="secondary" href="/">{t.website}</a>
         </header>
         {tab === "Dashboard" && <Dashboard t={t} lang={safeLang} kpis={dashboardKpis} tickets={tickets} quotes={quotes} invoices={invoices} go={go} />}
-        {tab === "Tickets" && <TicketsPanel t={t} lang={safeLang} tickets={tickets} equipment={equipment} selectedTicket={selectedTicket} setSelectedTicketId={setSelectedTicketId} patchTicket={patchTicket} updateStatus={updateStatus} generateQuote={generateQuote} />}
+        {tab === "Tickets" && <TicketsPanel t={t} lang={safeLang} tickets={tickets} equipment={equipment} selectedTicket={selectedTicket} setSelectedTicketId={setSelectedTicketId} patchTicket={patchTicket} saveTicket={saveTicket} updateStatus={updateStatus} generateQuote={generateQuote} />}
         {tab === "Dispatch" && <DispatchPanel t={t} lang={safeLang} tickets={tickets} patchTicket={patchTicket} openTicket={(ticket) => { setSelectedTicketId(ticket.id); go("Tickets"); }} />}
         {tab === "Technician" && <TechnicianPanel t={t} lang={safeLang} ticket={selectedTicket} updateStatus={updateStatus} generateQuote={generateQuote} />}
         {tab === "Mentor" && <MentorPanel t={t} lang={safeLang} tickets={tickets} customers={customers} equipment={equipment} patchTicket={patchTicket} generateQuote={generateQuote} />}
@@ -537,9 +587,32 @@ function Dashboard({ t, lang, kpis, tickets, quotes, invoices, go }) {
   );
 }
 
-function TicketsPanel({ t, lang, tickets, equipment, selectedTicket, setSelectedTicketId, patchTicket, updateStatus, generateQuote }) {
-  const set = (key, value) => patchTicket(selectedTicket.id, { [key]: value });
+function TicketsPanel({ t, lang, tickets, equipment, selectedTicket, setSelectedTicketId, patchTicket, saveTicket, updateStatus, generateQuote }) {
+  const [draft, setDraft] = useState(selectedTicket || {});
+  useEffect(() => {
+    setDraft(selectedTicket || {});
+  }, [selectedTicket?.id]);
+  const set = (key, value) => setDraft((current) => ({ ...current, [key]: value }));
   const linkedEquipment = equipment.find((item) => item.id === selectedTicket.equipmentId);
+  const mergedTicket = { ...selectedTicket, ...draft };
+  const technicianOptions = ["Ivan Petrov", "Nina Santos", "Carlos Reed"];
+  const mentorOptions = ["Senior Mentor", "Operations Mentor", "Refrigeration Mentor"];
+  const priorityOptions = ["Normal", "High", "Urgent"];
+
+  function save(eventName = "Edited", changes = draft) {
+    saveTicket(selectedTicket.id, { ...changes, updatedAt: new Date().toISOString() }, eventName);
+  }
+
+  function quickAction(changes, eventName) {
+    const next = { ...draft, ...changes };
+    setDraft(next);
+    save(eventName, next);
+  }
+
+  function generateTicketInvoice() {
+    quickAction({ status: "INVOICE SENT", invoiceStatus: "Unpaid" }, "Invoice Generated");
+  }
+
   return (
     <div className="moduleGrid">
       <section className="panel">
@@ -558,24 +631,49 @@ function TicketsPanel({ t, lang, tickets, equipment, selectedTicket, setSelected
       <section className="panel widePanel">
         <div className="panelHeader">
           <h2>{selectedTicket.ticketNumber}</h2>
-          <div className="buttonRow"><button className="secondary" onClick={() => updateStatus(selectedTicket, "MENTOR REVIEW")}>{t.actions.mentor}</button><button className="primary" onClick={() => generateQuote(selectedTicket)}>{t.actions.quote}</button></div>
+          <div className="buttonRow">
+            <button className="secondary" onClick={() => quickAction({ technician: draft.technician || technicianOptions[0], status: "ASSIGNED" }, "Technician Assigned")}>{t.actions.assign}</button>
+            <button className="secondary" onClick={() => quickAction({ mentor: draft.mentor || mentorOptions[0] }, "Mentor Assigned")}>{t.actions.assignMentor}</button>
+            <button className="secondary" onClick={() => quickAction({ status: "MENTOR REVIEW" }, "Mentor Review")}>{t.actions.mentor}</button>
+            <button className="secondary" onClick={() => generateQuote(mergedTicket)}>{t.actions.quote}</button>
+            <button className="secondary" onClick={generateTicketInvoice}>{t.actions.invoice}</button>
+            <button className="secondary" onClick={() => quickAction({ status: "COMPLETED" }, "Completed")}>{t.actions.complete}</button>
+            <button className="primary" onClick={() => quickAction({ status: "CLOSED" }, "Closed")}>{t.actions.close}</button>
+          </div>
         </div>
-        <TicketDetail t={t} lang={lang} ticket={selectedTicket} equipment={linkedEquipment} />
-        <AttachmentSystem t={t} attachments={selectedTicket.attachments} />
-        <Timeline t={t} items={timelineFor(selectedTicket)} />
+        <TicketDetail t={t} lang={lang} ticket={mergedTicket} equipment={linkedEquipment} />
+        <AttachmentSystem t={t} attachments={mergedTicket.attachments} />
+        <Timeline t={t} items={timelineFor(mergedTicket)} />
         <div className="fieldGrid">
-          <Select label={t.labels.status} value={selectedTicket.status} options={ticketStatuses} labels={statusLabels(lang)} onChange={(v) => set("status", v)} />
-          <Select label={t.labels.equipment} value={selectedTicket.equipmentId || ""} options={equipment.map((item) => item.id)} labels={Object.fromEntries(equipment.map((item) => [item.id, `${item.customer} | ${item.type} ${item.serial}`]))} onChange={(v) => {
+          <Select label={t.labels.status} value={draft.status || "NEW LEAD"} options={ticketStatuses} labels={statusLabels(lang)} onChange={(v) => set("status", v)} />
+          <Select label={t.labels.priority} value={draft.priority || "Normal"} options={priorityOptions} onChange={(v) => set("priority", v)} />
+          <Field label={t.labels.dispatcher} value={draft.dispatcher || draft.assigned || ""} onChange={(v) => { set("dispatcher", v); set("assigned", v); }} />
+          <Select label={t.labels.technician} value={draft.technician || ""} options={["", ...technicianOptions]} onChange={(v) => set("technician", v)} />
+          <Select label={t.labels.mentor} value={draft.mentor || ""} options={["", ...mentorOptions]} onChange={(v) => set("mentor", v)} />
+          <Field label={t.labels.businessName} value={draft.businessName || ""} onChange={(v) => set("businessName", v)} />
+          <Field label={t.labels.contactName} value={draft.customer || ""} onChange={(v) => set("customer", v)} />
+          <Field label={t.labels.phone} value={draft.phone || ""} onChange={(v) => set("phone", v)} />
+          <Field label={t.labels.email} value={draft.email || ""} onChange={(v) => set("email", v)} />
+          <Field label={t.labels.address} value={draft.address || ""} onChange={(v) => set("address", v)} />
+          <Field label={t.labels.equipmentType} value={draft.equipment || ""} onChange={(v) => set("equipment", v)} />
+          <Select label={t.labels.equipment} value={draft.equipmentId || ""} options={["", ...equipment.map((item) => item.id)]} labels={Object.fromEntries(equipment.map((item) => [item.id, `${item.customer} | ${item.type} ${item.serial}`]))} onChange={(v) => {
             const eq = equipment.find((item) => item.id === v);
-            patchTicket(selectedTicket.id, { equipmentId: v, equipment: eq?.type || selectedTicket.equipment, manufacturer: eq?.manufacturer || "", model: eq?.model || "", serial: eq?.serial || "" });
+            setDraft((current) => ({ ...current, equipmentId: v, equipment: eq?.type || current.equipment, manufacturer: eq?.manufacturer || current.manufacturer || "", model: eq?.model || current.model || "", serial: eq?.serial || current.serial || "" }));
           }} />
-          <Field label={t.labels.technician} value={selectedTicket.technician} onChange={(v) => set("technician", v)} />
-          <Field label={t.labels.mentor} value={selectedTicket.mentor} onChange={(v) => set("mentor", v)} />
-          <Field label={t.labels.manufacturer} value={selectedTicket.manufacturer} onChange={(v) => set("manufacturer", v)} />
-          <Field label={t.labels.model} value={selectedTicket.model} onChange={(v) => set("model", v)} />
-          <Field label={t.labels.serial} value={selectedTicket.serial} onChange={(v) => set("serial", v)} />
-          <div className="full"><label>{t.labels.diagnostic}</label><textarea value={selectedTicket.diagnosticNotes} onChange={(event) => set("diagnosticNotes", event.target.value)} /></div>
-          <div className="full"><label>{t.labels.mentorDiagnosis}</label><textarea value={selectedTicket.mentorDiagnosis} onChange={(event) => set("mentorDiagnosis", event.target.value)} /></div>
+          <Field label={t.labels.manufacturer} value={draft.manufacturer || draft.brand || ""} onChange={(v) => { set("manufacturer", v); set("brand", v); }} />
+          <Field label={t.labels.model} value={draft.model || ""} onChange={(v) => set("model", v)} />
+          <Field label={t.labels.serial} value={draft.serial || ""} onChange={(v) => set("serial", v)} />
+          <Field label={t.labels.contactMethod} value={draft.preferredContactMethod || ""} onChange={(v) => set("preferredContactMethod", v)} />
+          <Field label={t.labels.preferredTime} value={draft.preferredServiceTime || ""} onChange={(v) => set("preferredServiceTime", v)} />
+          <Field label={t.labels.appointmentDate} value={draft.appointmentDate || ""} onChange={(v) => set("appointmentDate", v)} />
+          <div className="full"><label>{t.labels.problem}</label><textarea value={draft.problem || ""} onChange={(event) => set("problem", event.target.value)} /></div>
+          <div className="full"><label>{t.labels.internalNotes}</label><textarea value={draft.internalNotes || ""} onChange={(event) => set("internalNotes", event.target.value)} /></div>
+          <div className="full"><label>{t.labels.dispatcherNotes}</label><textarea value={draft.dispatcherNotes || ""} onChange={(event) => set("dispatcherNotes", event.target.value)} /></div>
+          <div className="full"><label>{t.labels.mentorNotes}</label><textarea value={draft.mentorNotes || ""} onChange={(event) => set("mentorNotes", event.target.value)} /></div>
+          <div className="full"><label>{t.labels.technicianNotes}</label><textarea value={draft.technicianNotes || ""} onChange={(event) => set("technicianNotes", event.target.value)} /></div>
+          <div className="full"><label>{t.labels.diagnostic}</label><textarea value={draft.diagnosticNotes || ""} onChange={(event) => set("diagnosticNotes", event.target.value)} /></div>
+          <div className="full"><label>{t.labels.mentorDiagnosis}</label><textarea value={draft.mentorDiagnosis || ""} onChange={(event) => set("mentorDiagnosis", event.target.value)} /></div>
+          <div className="full"><button className="primary" type="button" onClick={() => save()}>{t.actions.save}</button></div>
         </div>
       </section>
     </div>
@@ -609,6 +707,10 @@ function TicketDetail({ t, lang, ticket, equipment }) {
     [t.labels.serial, ticket.serial],
     [t.labels.diagnostic, ticket.diagnosticNotes],
     [t.labels.mentorDiagnosis, ticket.mentorDiagnosis],
+    [t.labels.internalNotes, ticket.internalNotes],
+    [t.labels.dispatcherNotes, ticket.dispatcherNotes],
+    [t.labels.mentorNotes, ticket.mentorNotes],
+    [t.labels.technicianNotes, ticket.technicianNotes],
     [t.labels.quoteTotal, ticket.quoteTotal ? `$${ticket.quoteTotal}` : "-"],
     [t.labels.invoiceStatus, invoiceStatusLabel(ticket.invoiceStatus, lang)]
   ];
@@ -839,12 +941,17 @@ function ticketsFromLeads(leads) {
 function timelineFor(ticket) {
   return ticket.timeline?.length ? ticket.timeline : [
     ["Created", "Pending"],
+    ["Edited", "Pending"],
+    ["Status Changed", "Pending"],
     ["Assigned", "Pending"],
+    ["Technician Assigned", "Pending"],
+    ["Mentor Assigned", "Pending"],
     ["On The Way", "Pending"],
     ["Arrived", "Pending"],
     ["Diagnostic", "Pending"],
     ["Mentor Review", "Pending"],
     ["Quote Generated", "Pending"],
+    ["Invoice Generated", "Pending"],
     ["Approved", "Pending"],
     ["Invoice Sent", "Pending"],
     ["Paid", "Pending"],
@@ -856,8 +963,15 @@ function timelineFor(ticket) {
 
 function updateTimeline(timeline, status) {
   const label = statusTitle(status);
+  return stampTimeline(timeline, label);
+}
+
+function stampTimeline(timeline, eventName) {
   const current = timelineFor({ timeline });
-  return current.map(([name, time]) => name === label ? [name, new Date().toLocaleString()] : [name, time]);
+  const stamp = new Date().toLocaleString();
+  const hasEvent = current.some(([name]) => name === eventName);
+  const next = current.map(([name, time]) => name === eventName ? [name, stamp] : [name, time]);
+  return hasEvent ? next : [...next, [eventName, stamp]];
 }
 
 function statusTitle(status) {
