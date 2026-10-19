@@ -1,8 +1,12 @@
 import "./globals.css";
 
 export const metadata = {
+  metadataBase: new URL("https://fortenservice.vercel.app"),
   title: "Forten Commercial Equipment Services",
   description: "Commercial Kitchen Equipment Repair & Maintenance platform with website, CRM, estimates, work orders, invoices, and equipment history.",
+  alternates: {
+    canonical: "/",
+  },
   verification: {
     google: "gXHwzW1hPONEIOAw3lQjCxYUCm59DZ1Ms2iChYnIqwE",
   },
